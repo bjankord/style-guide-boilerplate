@@ -1,4 +1,3 @@
-<?php include_once('functions.php'); ?>
 <!DOCTYPE html>
 <html lang="en" class="no-js">
 <head>
@@ -48,7 +47,19 @@
         </li>
       </ul>
 
-      <?php listFilesInFolder('markup'); ?>
+      <h2 class="sg-h2 sg-subnav-title">HTML</h2>
+      <ul class="sg-nav-group">
+        ${base.map(data => `<li>
+          <a href="#sg-${data.title}">${data.title}</a>
+        <li>`).join('')}
+      </ul>
+
+      <h2 class="sg-h2 sg-subnav-title">Patterns</h2>
+      <ul class="sg-nav-group">
+        <li>
+          <a href="#sg-about">Getting Started</a>
+        <li>
+      </ul>
     </div><!--/.sg-sidebar-->
 
     <div id="main" class="sg-main" role="main">
@@ -157,7 +168,58 @@
           </div><!--/.sg-font-stacks-->
         </div><!--/.sg-info-->
 
-        <?php renderFilesInFolder('markup'); ?>
+        <div class="sg-base">
+          <h1 class="sg-h1">Base HTML</h1>
+          ${base.map(data => `
+          <div class="sg-markup sg-section">
+            <div class="sg-display">
+              <h2 class="sg-h2"><a id="sg-{{this.title}}" class="sg-anchor">{{title}}</a></h2>
+              {{#if documentation}}
+              <div class="sg-doc">
+                  <h3 class="sg-h3">Usage</h3>
+                  {{{documentation}}}
+              </div>
+              {{/if}}
+              <h3 class="sg-h3">Example</h3>
+              {{{content}}}
+          </div>
+            <div class="sg-markup-controls"><a class="sg-btn sg-btn--source" href="#">View Source</a>
+              <a class="sg-btn--top" href="#top">Back to Top</a>
+            </div>
+            <div class="sg-source sg-animated">
+              <a class="sg-btn sg-btn--select" href="#">Copy Source</a>
+              <pre class="prettyprint linenums"><code>${data.content}</code></pre>
+            </div>
+          </div>`).join('')}
+        </div><!--/.sg-base-->
+
+        <div class="sg-patterns">
+          <h1 class="sg-h1">Patterns</h1>
+          ${patterns.map(data => `
+          <div class="sg-markup sg-section">
+            <div class="sg-display">
+              <h2 class="sg-h2">
+                <a id="sg-${data.title}" class="sg-anchor">${data.title}</a>
+              </h2>
+              ${data.documentation ? `<div class="sg-doc">
+                <h3 class="sg-h3">Usage</h3>
+                <div class="sg-doc">
+                  <h3 class="sg-h3">Usage</h3>
+                  ${data.documenation}
+                </div>
+              </div>` : ''}
+              <h3 class="sg-h3">Example</h3>
+              ${data.content}
+            </div>
+            <div class="sg-markup-controls"><a class="sg-btn sg-btn--source" href="#">View Source</a>
+              <a class="sg-btn--top" href="#top">Back to Top</a>
+            </div>
+            <div class="sg-source sg-animated">
+              <a class="sg-btn sg-btn--select" href="#">Copy Source</a>
+              <pre class="prettyprint linenums"><code>${data.content}</code></pre>
+            </div>
+          </div>`).join('')}
+        </div><!--/.sg-patterns-->
       </div><!--/.sg-container-->
     </div><!--/.sg-main-->
   </div><!--/.sg-wrapper-->
@@ -166,4 +228,3 @@
   <script src="js/sg-scripts.js"></script>
 </body>
 </html>
-
