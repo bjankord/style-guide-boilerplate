@@ -47,11 +47,13 @@
         </li>
       </ul>
 
-      <h2 class="sg-h2 sg-subnav-title">HTML</h2>
       <ul class="sg-nav-group">
-        ${base.map(data => `<li>
-          <a href="#sg-${data.title}">${data.title}</a>
-        <li>`).join('')}
+        <li class="sg-subnav-parent">
+          <h2 id="sg-markup-base" class="sg-h2 sg-title">BASE HTML</h2>
+          <ul class="sg-nav-group">
+            ${base.map(data => `<li><a href="#sg-markup-base-${data.title}-html">${data.title}</a></li>`).join('')}
+          </ul>
+        </li>
       </ul>
 
       <h2 class="sg-h2 sg-subnav-title">Patterns</h2>
@@ -168,58 +170,66 @@
           </div><!--/.sg-font-stacks-->
         </div><!--/.sg-info-->
 
-        <div class="sg-base">
-          <h1 class="sg-h1">Base HTML</h1>
+        <div class="sg-section-group">
+          <h1 id="sg-markup-base" class="sg-h1 sg-title">Base HTML</h1>
+          <div class="sg-section-group">
           ${base.map(data => `
-          <div class="sg-markup sg-section">
-            <div class="sg-display">
-              <h2 class="sg-h2"><a id="sg-{{this.title}}" class="sg-anchor">{{title}}</a></h2>
-              {{#if documentation}}
-              <div class="sg-doc">
-                  <h3 class="sg-h3">Usage</h3>
-                  {{{documentation}}}
-              </div>
-              {{/if}}
-              <h3 class="sg-h3">Example</h3>
-              {{{content}}}
-          </div>
-            <div class="sg-markup-controls"><a class="sg-btn sg-btn--source" href="#">View Source</a>
-              <a class="sg-btn--top" href="#top">Back to Top</a>
-            </div>
-            <div class="sg-source sg-animated">
-              <a class="sg-btn sg-btn--select" href="#">Copy Source</a>
-              <pre class="prettyprint linenums"><code>${data.content}</code></pre>
-            </div>
-          </div>`).join('')}
-        </div><!--/.sg-base-->
-
-        <div class="sg-patterns">
-          <h1 class="sg-h1">Patterns</h1>
-          ${patterns.map(data => `
-          <div class="sg-markup sg-section">
-            <div class="sg-display">
-              <h2 class="sg-h2">
-                <a id="sg-${data.title}" class="sg-anchor">${data.title}</a>
-              </h2>
-              ${data.documentation ? `<div class="sg-doc">
-                <h3 class="sg-h3">Usage</h3>
-                <div class="sg-doc">
-                  <h3 class="sg-h3">Usage</h3>
-                  ${data.documenation}
+            <div class="sg-section">
+              <h2 id="sg-markup-base-${data.title}-html" class="sg-h2 sg-title">${data.title}</h2>
+              ${data.documentation ? `<div class="sg-sub-section sg-doc">
+                <div class="markdown-body">
+                  ${data.documentation}
                 </div>
               </div>` : ''}
-              <h3 class="sg-h3">Example</h3>
-              ${data.content}
-            </div>
-            <div class="sg-markup-controls"><a class="sg-btn sg-btn--source" href="#">View Source</a>
-              <a class="sg-btn--top" href="#top">Back to Top</a>
-            </div>
-            <div class="sg-source sg-animated">
-              <a class="sg-btn sg-btn--select" href="#">Copy Source</a>
-              <pre class="prettyprint linenums"><code>${data.content}</code></pre>
-            </div>
-          </div>`).join('')}
-        </div><!--/.sg-patterns-->
+              <div class="sg-sub-section sg-example">
+                <h3 class="sg-h3 sg-title">Example</h3>
+                ${data.content}
+              </div>
+              <div class="sg-sub-section">
+                <div class="sg-markup-controls">
+                  <button type="button" class="sg-btn sg-btn--source">View Source</button>
+                  <a class="sg-btn--top" href="#top">Back to Top</a>
+                </div>
+                <div class="sg-source">
+                  <button type="button" class="sg-btn sg-btn--select">Copy Source</button>
+                  <pre class="line-numbers language-markup">
+<code class=" language-markup">${data.escapedContent}</code>
+                  </pre>
+                </div>
+              </div>
+            </div>`).join('')}
+          </div>
+          <h1 id="sg-markup-patterns" class="sg-h1 sg-title">Patterns</h1>
+          <div class="sg-section-group">
+          ${patterns.map(data => `
+            <div class="sg-section">
+              <h2 id="sg-markup-base-${data.title}-html" class="sg-h2 sg-title">${data.title}</h2>
+              ${data.documentation ? `<div class="sg-sub-section sg-doc">
+                <div class="markdown-body">
+                  ${data.documentation}
+                </div>
+              </div>` : ''}
+              <div class="sg-sub-section sg-example">
+                <h3 class="sg-h3 sg-title">Example</h3>
+                ${data.content}
+              </div>
+              <div class="sg-sub-section">
+                <div class="sg-markup-controls">
+                  <button type="button" class="sg-btn sg-btn--source">View Source</button>
+                  <a class="sg-btn--top" href="#top">Back to Top</a>
+                </div>
+                <div class="sg-source">
+                  <button type="button" class="sg-btn sg-btn--select">Copy Source</button>
+                  <pre class="line-numbers language-markup">
+<code class=" language-markup">${data.escapedContent}</code>
+                  </pre>
+                </div>
+              </div>
+            </div>`).join('')}
+          </div>
+        </div>
+
+
       </div><!--/.sg-container-->
     </div><!--/.sg-main-->
   </div><!--/.sg-wrapper-->

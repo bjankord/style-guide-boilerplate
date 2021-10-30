@@ -2,6 +2,8 @@
   "name": "@bjankord/style-guide-boilerplate",
   "version": "3.3.2",
   "description": "A starting point for crafting living style guides.",
+  "author": "Brett Jankord",
+  "license": "MIT",
   "scripts": {
     "start": "cross-env NODE_ENV=development PORT=8080 nodemon --exec 'node server/index.js'",
     "test": "echo \"Error: no test specified\"",
@@ -14,16 +16,13 @@
     "type": "git",
     "url": "git+https://github.com/bjankord/Style-Guide-Boilerplate.git"
   },
-  "author": "Brett Jankord",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/bjankord/Style-Guide-Boilerplate/issues"
   },
   "homepage": "https://github.com/bjankord/Style-Guide-Boilerplate#readme",
   "devDependencies": {
-    "gh-pages": "^2.0.1"
-  },
-  "dependencies": {
+    "gh-pages": "^2.0.1",
+    "marked": "^1.2.0",
     "cross-env": "^7.0.2",
     "express": "^4.17.1",
     "express-es6-template-engine": "^2.2.3"
