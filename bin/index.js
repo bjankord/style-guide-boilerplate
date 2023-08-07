@@ -2,30 +2,72 @@
 
 // require('../lib/cli')(process.argv.slice(2));
 const path = require('path');
-const child_process = require('child_process');
+const spawn = require('cross-spawn');
+const { exec } = require('child_process');
+const bs = require('browser-sync').create();
+const chokidar = require('chokidar');
+
 const watch = require('../lib/watch');
 
+// This file seems to be cached and changes to it are not represented when the watcher runs
+// TODO - need to read the file contents of this file instead of requiring it to see if that
+// can get around the caching issue
+
+// may need to read the config file on every time it changes to pass in its fresh state to the
+// build function
 const config = require('../lib/config');
 const start = require('../lib/start');
 const build = require('../lib/build');
 
-const serve = () => {};
-
 const main = async (argv) => {
   const task = argv[0];
-  console.log(task);
-  console.log('main');
+  console.log({ task });
 
   if (task.toLowerCase() === 'serve') {
     try {
-      await build(config);
+      // const buildStaticSite = await build(config);
+      build(config).then(() => {
+        // start Server
+        console.log('Initial build should be complete, this should be last thing to log');
+        // // .init starts the server
+        // bs.init({
+        //   server: './build',
+        // });
+
+        const sgbConfig = path.join(process.cwd(), 'sgb.config.js');
+
+        const watcher = chokidar.watch(sgbConfig, {
+          persistent: true,
+        });
+
+        watcher.on('change', async (filePath) => {
+          console.log(`File changed: ${filePath}`);
+          await build(config);
+          // await watchRun(filePath);
+        });
+
+        watcher.on('add', async (filePath) => {
+          console.log(`File added: ${filePath}`);
+          await build(config);
+          // await watchRun(filePath);
+        });
+
+        process.on('SIGINT', () => {
+          watcher.close();
+          process.exit();
+        });
+      });
+
       // serve();
-      child_process.spawn(
-        'node',
-        [path.join(process.cwd(), 'lib', 'server.js')],
-        { stdio: 'inherit' },
-      );
-      watch();
+      // this seems to work but the process is never killed
+      // spawn(
+      //   // 'nodemon server.js -e ejs,js,css,html,jpg,png,scss',
+      //   './node_modules/.bin/nodemon',
+      //   ['lib/dev-server/server.js'],
+      //   // [path.join(process.cwd(), 'lib', 'dev-server', 'server.js')],
+      // ).on('error', (err) => { throw err; });
+
+      // watch();
     } catch (err) {
       console.error(err);
       process.exit(1);

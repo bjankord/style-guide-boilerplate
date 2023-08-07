@@ -6,6 +6,8 @@
     "lint": "eslint --ext .js",
     "test": "echo \"Error: no test specified\"",
     "deploy": "gh-pages -d gh-pages",
+    "serve": "node bin/index.js serve",
+    "build": "node bin/index.js build",
     "release:major": "npm test && npm version major -m \"Released version %s\" && npm publish --access=public && git push --follow-tags",
     "release:minor": "npm test && npm version minor -m \"Released version %s\" && npm publish --access=public && git push --follow-tags",
     "release:patch": "npm test && npm version patch -m \"Released version %s\" && npm publish --access=public && git push --follow-tags"
@@ -25,17 +27,22 @@
   },
   "dependencies": {
     "chokidar": "^3.5.2",
+    "cross-spawn": "^7.0.3",
     "escape-html": "^1.0.3",
+    "express": "^4.17.1",
     "fs-extra": "^10.0.0",
     "github-markdown-css": "^5.0.0",
     "marked": "^3.0.8",
     "node-static": "^0.7.11",
     "node-watch": "^0.7.2",
+    "nodemon": "^2.0.15",
     "prismjs": "^1.25.0",
     "resolve-from": "^5.0.0",
+    "rimraf": "^3.0.2",
     "sanitize-html": "^2.5.3"
   },
   "devDependencies": {
+    "browser-sync": "^2.27.7",
     "eslint": "^8.2.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.3",
