@@ -1,0 +1,41 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/Card.astro";
+import RawCard from "../components/Card.astro?raw";
+import ComponentWrapper from "../sgb/ComponentWrapper.astro";
+
+import Blockquote from "../core/Blockquote/blockquote.html";
+import RawBlockquote from "../core/Blockquote/blockquote.html?raw";
+
+import DynamicComponent from '../sgb/DynamicComponent.astro';
+import { collectionTree } from "../sgb/helpers";
+
+console.log(JSON.stringify(collectionTree, null, 2))
+
+const c = 'Card';
+
+const Card = (await import(`../components/${c}.astro`)).default
+
+---
+
+<Layout title="Style Guide Boilerplate">
+  <main>
+    <!-- TODO - Loop over core and render dynamic imported components -->
+    <DynamicComponent componentPath="../core/Address/address.html" />
+
+    <ComponentWrapper heading="Block Quote" raw={RawBlockquote}>
+      <Blockquote />
+    </ComponentWrapper>
+    <ComponentWrapper heading="Card" raw={RawCard}>
+      <Card
+        href="https://docs.astro.build/"
+        title="Documentation"
+        body="Learn how Astro works and explore the official API docs."
+      />
+    </ComponentWrapper>
+  </main>
+</Layout>
+
+<style>
+ /* TBD */
+</style>

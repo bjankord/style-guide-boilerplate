@@ -2,8 +2,13 @@
   "name": "@bjankord/style-guide-boilerplate",
   "version": "3.3.2",
   "description": "A starting point for crafting living style guides.",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\"",
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
     "deploy": "gh-pages -d gh-pages",
     "release:major": "npm test && npm version major -m \"Released version %s\" && npm publish --access=public && git push --follow-tags",
     "release:minor": "npm test && npm version minor -m \"Released version %s\" && npm publish --access=public && git push --follow-tags",
@@ -19,6 +24,10 @@
     "url": "https://github.com/bjankord/Style-Guide-Boilerplate/issues"
   },
   "homepage": "https://github.com/bjankord/Style-Guide-Boilerplate#readme",
+  "dependencies": {
+    "@astrojs/mdx": "^2.0.5",
+    "astro": "^4.0.8"
+  },
   "devDependencies": {
     "gh-pages": "^2.0.1"
   }

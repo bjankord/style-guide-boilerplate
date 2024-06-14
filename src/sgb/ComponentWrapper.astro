@@ -1,0 +1,22 @@
+---
+export interface Props {
+  raw: string;
+  heading: string;
+}
+
+const { raw, heading } = Astro.props;
+
+const html = await Astro.slots.render("default");
+import { Code } from "astro/components";
+---
+
+<h2>{heading} Component</h2>
+<Fragment set:html={html} />
+<!-- <h2>{heading} Html</h2>
+<Code code={html} lang="html" /> -->
+<h2>{heading} Code</h2>
+<Code code={raw} lang="html" />
+
+<style>
+/* TBD */
+</style>

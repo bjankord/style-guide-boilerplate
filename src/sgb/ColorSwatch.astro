@@ -1,0 +1,100 @@
+---
+export interface Props {
+  swatchColor: string;
+  name?: string;
+  variable?: string;
+}
+
+const {
+  name,
+  swatchColor,
+  hex,
+  rgb,
+  variable,
+  lightTextColorHex,
+  darkTextColorHex,
+  showContrastInfo,
+} = Astro.props;
+---
+
+<div class="sgb-cs-swatch">
+  <!-- <div part="cs-contrast-info" class={`contrast-info ${showContrastInfo !== null ? '' : 'hide'}`}>
+    <div part="cs-contrast-info-container">
+      <dl part="cs-contrast-list">
+        <dt part="cs-large-light-text" class="light-text">AA</dt>
+        <dd part="cs-large-light-text-score">${this.renderContrastPassFail(this.lightTextWCAGContrastInfo.largeText.aa)}</dd>
+      </dl>
+      <dl part="cs-contrast-list">
+        <dt part="cs-normal-light-text" class="light-text">AA</dt>
+        <dd part="cs-normal-light-text-score">${this.renderContrastPassFail(this.lightTextWCAGContrastInfo.regularText.aa)}</dd>
+      </dl>
+    </div>
+    <div part="cs-contrast-info-container">
+      <dl part="cs-contrast-list">
+        <dt part="cs-large-dark-text" class="dark-text">AA</dt>
+        <dd part="cs-large-dark-text-score">${this.renderContrastPassFail(this.darkTextWCAGContrastInfo.largeText.aa)}</dd>
+      </dl>
+      <dl part="cs-contrast-list">
+        <dt part="cs-normal-dark-text" class="dark-text">AA</dt>
+        <dd part="cs-normal-dark-text-score">${this.renderContrastPassFail(this.darkTextWCAGContrastInfo.regularText.aa)}</dd>
+      </dl>
+    </div>
+  </div> -->
+</div>
+<div class="sgb-cs-body">
+  <div class="sgb-cs-info">
+    <slot />
+  </div>
+  <button type="button" class="sgb-cs-contrast-toggle">
+    <span class="sgb-cs-visually-hidden">Toggle Contrast Info</span>
+    <svg style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M981.333333 512c0 260.266667-170.666667 469.333333-469.333333 469.333333L512 42.666667C810.666667 42.666667 981.333333 251.733333 981.333333 512z"  /><path d="M512 1024c-25.6 0-42.666667-17.066667-42.666667-42.666667L469.333333 42.666667c0-25.6 17.066667-42.666667 42.666667-42.666667 302.933333 0 512 209.066667 512 512S814.933333 1024 512 1024zM554.666667 85.333333 554.666667 938.666667c264.533333-21.333333 384-221.866667 384-426.666667S819.2 106.666667 554.666667 85.333333z"  /><path d="M512 1024C230.4 1024 0 793.6 0 512S230.4 0 512 0c25.6 0 42.666667 17.066667 42.666667 42.666667l0 938.666667C554.666667 1006.933333 537.6 1024 512 1024zM469.333333 85.333333C256 110.933333 85.333333 290.133333 85.333333 512s170.666667 401.066667 384 426.666667L469.333333 85.333333z"  /></svg>
+  </button>
+</div>
+
+<script>
+  console.log('test 123');
+</script>
+
+<style
+define:vars={{ swatchColor: swatchColor }}>
+.sgb-cs-swatch {
+  background-color: var(--swatchColor);
+  border-radius: 5px;
+  min-height: 6.250rem;
+}
+
+.sgb-cs-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.sgb-cs-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sgb-cs-color-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.sgb-cs-contrast-toggle {
+  border: 0;
+  font: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.sgb-cs-visually-hidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+</style>

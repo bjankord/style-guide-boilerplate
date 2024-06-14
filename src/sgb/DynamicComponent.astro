@@ -1,0 +1,19 @@
+---
+import ComponentWrapper from "../sgb/ComponentWrapper.astro";
+
+interface Props {
+  componentPath: string;
+}
+
+const { componentPath } = Astro.props as Props;
+/* @vite-ignore */
+const Component = (await import(`${componentPath}`)).default
+const RawComponent = (await import(`${componentPath}?raw`)).default
+---
+<div>
+  Dynmaic component start
+  <ComponentWrapper heading="Address" raw={RawComponent}>
+    <Component />
+  </ComponentWrapper>
+  Dynmaic component end
+</div>

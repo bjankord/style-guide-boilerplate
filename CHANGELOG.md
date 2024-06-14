@@ -1,3 +1,7 @@
+4.0.0-alphas
+==================
+* Renamed `markup` directory to `components`
+* Renamed `base` directory to `core`
 3.3.2 / 2018-10-6
 ==================
 * Added package.json file to help deploy to gh-pages

@@ -1,0 +1,15 @@
+---
+import ColorSwatch from '../../sgb/ColorSwatch.astro';
+const colors = ['red', 'blue', 'white'];
+---
+
+Colors.astro
+
+{colors.map((color) => (
+    <ColorSwatch swatchColor={color}>
+      <ul>
+        <li>Color Name: {color}</li>
+        <li>Color Variable: $color-vairable</li>
+      </ul>
+    </ColorSwatch>
+))}

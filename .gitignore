@@ -10,6 +10,12 @@
 *.vi
 *~
 
+# build output
+dist/
+
+# generated types
+.astro/
+
 # OS or Editor folders
 tmp
 *.DS_Store
@@ -26,6 +32,15 @@ nbproject
 .idea
 
 
-# Folders to ignore
-node_modules
-bower_components
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables
+.env
+.env.production
