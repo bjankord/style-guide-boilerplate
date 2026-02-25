@@ -1,29 +1,29 @@
 ---
 import DocContainer from "../sgb/DocContainer.astro";
 
-const modules = import.meta.glob<{ default: any }>('../../examples/components/**/*.example.astro', { eager: true });
-const rawModules = import.meta.glob<string>('../../examples/components/**/*.example.astro', { eager: true, query: '?raw', import: 'default' });
+const modules = import.meta.glob<{ default: any }>('../../core/**/*.(html|astro)', { eager: true });
+const rawModules = import.meta.glob<string>('../../core/**/*.(html|astro)', { eager: true, as: 'raw' });
 
 console.log('Raw module paths:', Object.keys(rawModules));
 console.log('Module paths:', Object.keys(modules));
 
 const allPaths = Object.keys(modules)
-  .filter((p) => p.endsWith('.example.astro'))
+  .filter((p) => p.endsWith('.html'))
   .filter((p) => !p.startsWith('./'));
 
 allPaths.sort((a, b) => {
-  const aName = a.split('/').pop()?.replace('.example.astro', '') ?? a;
-  const bName = b.split('/').pop()?.replace('.example.astro', '') ?? b;
+  const aName = a.split('/').pop()?.replace('.html', '') ?? a;
+  const bName = b.split('/').pop()?.replace('.html', '') ?? b;
   return aName.localeCompare(bName);
 });
 ---
 
 {allPaths.length === 0 ? (
-  <div>No components found</div>
+  <div>No core examples found</div>
 ) : (
   <>
     {allPaths.map((path) => {
-      const fileName = path.split('/').pop()?.replace('.example.astro', '') ?? path;
+      const fileName = path.split('/').pop()?.replace('.html', '') ?? path;
       const Component = modules[path]?.default ?? null;
       const rawContent = rawModules[path] ?? '// Source code not available';
       return (
