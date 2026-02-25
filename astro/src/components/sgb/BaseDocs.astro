@@ -1,0 +1,47 @@
+---
+import DocContainer from "../sgb/DocContainer.astro";
+
+const modules = import.meta.glob<{ default: any }>('../../docs/base/**/*.(html|astro)', { eager: true });
+const rawModules = import.meta.glob<string>('../../docs/base/**/*.(html|astro)', { eager: true, query: '?raw', import: 'default' });
+const markdownDocs = import.meta.glob<string>('../../docs/base/**/*.md', { eager: true, query:'?raw', import: 'default' });
+
+console.log('Module paths:', Object.keys(modules));
+console.log('Raw module paths:', Object.keys(rawModules));
+console.log('Markdown docs paths:', Object.keys(markdownDocs));
+
+const allPaths = Object.keys(modules)
+  .filter((p) => p.endsWith('.html') || p.endsWith('.doc.astro'))
+  .filter((p) => !p.startsWith('./'));
+
+allPaths.sort((a, b) => {
+  const aName = a.split('/').pop()?.replace('.html', '').replace('.doc.astro', '') ?? a;
+  const bName = b.split('/').pop()?.replace('.html', '').replace('.doc.astro', '') ?? b;
+  return aName.localeCompare(bName);
+});
+---
+
+{allPaths.length === 0 ? (
+  <div>No base docs found</div>
+) : (
+  <>
+    {allPaths.map((path) => {
+      console.log('Processing path:', path);
+      const fileName = path.split('/').pop()?.replace('.html', '').replace('.doc.astro', '') ?? path;
+      const Component = modules[path]?.default ?? null;
+      const rawContent = rawModules[path] ?? '// Source code not available';
+      const markdownContent = path.replace('.html', '.md').replace('.doc.astro', '.md') ?? null;
+      let md = null;
+      if (markdownDocs[markdownContent]) {
+        md = markdownDocs[markdownContent];
+        console.log(`Found markdown for ${fileName}:`, md);
+      } else {
+        console.log(`No markdown found for ${fileName} at path: ${markdownContent}`);
+      } 
+      return (
+        <DocContainer heading={fileName} raw={rawContent} markdown={md}>
+          {Component ? <Component /> : <div>Component not found: {path}</div>}
+        </DocContainer>
+      );
+    })}
+  </>
+)}

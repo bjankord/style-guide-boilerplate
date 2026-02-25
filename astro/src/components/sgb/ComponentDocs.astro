@@ -1,19 +1,19 @@
 ---
 import DocContainer from "../sgb/DocContainer.astro";
 
-const modules = import.meta.glob<{ default: any }>('../../examples/components/**/*.example.astro', { eager: true });
-const rawModules = import.meta.glob<string>('../../examples/components/**/*.example.astro', { eager: true, query: '?raw', import: 'default' });
+const modules = import.meta.glob<{ default: any }>('../../docs/components/**/*.doc.astro', { eager: true });
+const rawModules = import.meta.glob<string>('../../docs/components/**/*.doc.astro', { eager: true, query: '?raw', import: 'default' });
 
 console.log('Raw module paths:', Object.keys(rawModules));
 console.log('Module paths:', Object.keys(modules));
 
 const allPaths = Object.keys(modules)
-  .filter((p) => p.endsWith('.example.astro'))
+  .filter((p) => p.endsWith('.doc.astro'))
   .filter((p) => !p.startsWith('./'));
 
 allPaths.sort((a, b) => {
-  const aName = a.split('/').pop()?.replace('.example.astro', '') ?? a;
-  const bName = b.split('/').pop()?.replace('.example.astro', '') ?? b;
+  const aName = a.split('/').pop()?.replace('.doc.astro', '') ?? a;
+  const bName = b.split('/').pop()?.replace('.doc.astro', '') ?? b;
   return aName.localeCompare(bName);
 });
 ---
@@ -23,7 +23,7 @@ allPaths.sort((a, b) => {
 ) : (
   <>
     {allPaths.map((path) => {
-      const fileName = path.split('/').pop()?.replace('.example.astro', '') ?? path;
+      const fileName = path.split('/').pop()?.replace('.doc.astro', '') ?? path;
       const Component = modules[path]?.default ?? null;
       const rawContent = rawModules[path] ?? '// Source code not available';
       return (

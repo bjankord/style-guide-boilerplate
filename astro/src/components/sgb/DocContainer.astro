@@ -1,23 +1,39 @@
 ---
+import { Code } from "astro/components";
+import { marked } from 'marked';
+
 export interface Props {
   raw: string | null | undefined;
   heading: string;
+  markdown?: string | null | undefined;
 }
 
-const { raw, heading } = Astro.props;
+const { raw, heading, markdown } = Astro.props;
 
 const html = await Astro.slots.render("default");
-import { Code } from "astro/components";
+
+
+let parsedMarkdown;
+if (markdown) {
+  console.log('Parsing markdown content');
+  parsedMarkdown = marked.parse(markdown);
+  console.log('Parsed markdown HTML:', parsedMarkdown);
+} 
 ---
 
-<h2>{heading} Component</h2>
+<h2>{heading}</h2>
 <Fragment set:html={html} />
-<!-- <h2>{heading} Html</h2>
-<Code code={html} lang="html" /> -->
 {raw && (
   <>
-    <h2>{heading} Code</h2>
+    <h2>View Code</h2>
     <Code code={raw} lang="html" />
+  </>
+)}
+
+{markdown && (
+  <>
+    <h2>{heading} Docs</h2>
+    <div class="markdown" set:html={parsedMarkdown} />
   </>
 )}
 
