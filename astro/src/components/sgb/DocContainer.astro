@@ -1,6 +1,6 @@
 ---
 export interface Props {
-  raw: string;
+  raw: string | null | undefined;
   heading: string;
 }
 
@@ -14,8 +14,12 @@ import { Code } from "astro/components";
 <Fragment set:html={html} />
 <!-- <h2>{heading} Html</h2>
 <Code code={html} lang="html" /> -->
-<h2>{heading} Code</h2>
-<Code code={raw} lang="html" />
+{raw && (
+  <>
+    <h2>{heading} Code</h2>
+    <Code code={raw} lang="html" />
+  </>
+)}
 
 <style>
 pre.astro-code {

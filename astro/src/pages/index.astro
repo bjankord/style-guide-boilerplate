@@ -1,8 +1,8 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
 
-import ComponentWrapper from "../components/sgb/ComponentWrapper.astro";
+import ComponentDocs from "../components/sgb/ComponentDocs.astro";
+import DocContainer from "../components/sgb/DocContainer.astro";
 import Card from "../components/card/Card.astro";
 import RawCard from "../components/card/Card.astro?raw";
 
@@ -11,13 +11,12 @@ import RawCard from "../components/card/Card.astro?raw";
 ---
 
 <Layout>
-	<Welcome />
-
-    <ComponentWrapper heading="Card" raw={RawCard}>
+    <!-- <DocContainer heading="Card" raw={RawCard}>
       <Card
         href="https://docs.astro.build/"
         title="Documentation"
         body="Learn how Astro works and explore the official API docs."
       />
-    </ComponentWrapper>
+    </DocContainer> -->
+	<ComponentDocs componentPath="../card/Card.astro" />
 </Layout>

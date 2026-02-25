@@ -1,0 +1,36 @@
+---
+import DocContainer from "../sgb/DocContainer.astro";
+
+const modules = import.meta.glob<{ default: any }>('../../components/**/*.astro', { eager: true });
+const rawModules = import.meta.glob<string>('../../components/**/*.astro', { eager: true, as: 'raw' });
+
+console.log('Raw module paths:', Object.keys(rawModules));
+console.log('Module paths:', Object.keys(modules));
+
+const allPaths = Object.keys(modules)
+  .filter((p) => p.endsWith('.astro'))
+  .filter((p) => !p.startsWith('./'));
+
+allPaths.sort((a, b) => {
+  const aName = a.split('/').pop()?.replace('.astro', '') ?? a;
+  const bName = b.split('/').pop()?.replace('.astro', '') ?? b;
+  return aName.localeCompare(bName);
+});
+---
+
+{allPaths.length === 0 ? (
+  <div>No components found</div>
+) : (
+  <>
+    {allPaths.map((path) => {
+      const fileName = path.split('/').pop()?.replace('.astro', '') ?? path;
+      const Component = modules[path]?.default ?? null;
+      const rawContent = rawModules[path] ?? '// Source code not available';
+      return (
+        <DocContainer heading={fileName} raw={rawContent}>
+          {Component ? <Component /> : <div>Component not found: {path}</div>}
+        </DocContainer>
+      );
+    })}
+  </>
+)}
