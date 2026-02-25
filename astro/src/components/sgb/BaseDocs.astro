@@ -26,6 +26,8 @@ allPaths.sort((a, b) => {
   <>
     {allPaths.map((path) => {
       console.log('Processing path:', path);
+      // TODO - this logic is duplicated in ComponentDocs. We should refactor to a shared utility function.
+      // TODO - Update filenames like BlockQuote to Block Quote
       const fileName = path.split('/').pop()?.replace('.html', '').replace('.doc.astro', '') ?? path;
       const Component = modules[path]?.default ?? null;
       const rawContent = rawModules[path] ?? '// Source code not available';

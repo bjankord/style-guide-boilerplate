@@ -23,6 +23,7 @@ allPaths.sort((a, b) => {
 ) : (
   <>
     {allPaths.map((path) => {
+      // TODO - Update filenames like BlockQuote to Block Quote
       const fileName = path.split('/').pop()?.replace('.doc.astro', '') ?? path;
       const Component = modules[path]?.default ?? null;
       const rawContent = rawModules[path] ?? '// Source code not available';
