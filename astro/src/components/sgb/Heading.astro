@@ -1,0 +1,51 @@
+---
+export interface Props {
+  level: '1' | '2' | '3' | '4' | '5' | '6';
+  id?: string;
+  class?: string;
+  size?: '1' | '2' | '3' | '4' | '5' | '6';
+}
+
+const { level, id, class: className, size } = Astro.props;
+
+const Tag = `h${level}` as keyof HTMLElementTagNameMap;
+
+const classes = [
+  `sg-h${level}`,
+  size && `sg-h${level}-${size}`,
+  className
+].filter(Boolean).join(' ');
+---
+
+<Tag id={id} class={classes}>
+  <slot />
+</Tag>
+
+<style>
+.sg-h1,
+.sg-h2,
+.sg-h3 {
+  font-family: "HelveticaNeue-Medium", "Helvetica Neue Medium", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 500;
+  margin-bottom: 1em;
+  margin-top: 0;
+}
+
+.sg-h1 {
+  font-size: 2em;
+  padding-bottom: .2em;
+  text-transform: capitalize;
+}
+
+.sg-h2 {
+  border-bottom: 1px solid #ddd;
+  font-size: 1.75em;
+  margin-bottom: .75em;
+  padding-bottom: .2em;
+  text-transform: capitalize;
+}
+
+.sg-h3 {
+  font-size: 1.5em;
+}
+</style>

@@ -1,6 +1,7 @@
 ---
 import DocContainer from "../sgb/DocContainer.astro";
 
+
 const modules = import.meta.glob<{ default: any }>('../../docs/base/**/*.(html|astro)', { eager: true });
 const rawModules = import.meta.glob<string>('../../docs/base/**/*.(html|astro)', { eager: true, query: '?raw', import: 'default' });
 const markdownDocs = import.meta.glob<string>('../../docs/base/**/*.md', { eager: true, query:'?raw', import: 'default' });
@@ -40,7 +41,7 @@ allPaths.sort((a, b) => {
         console.log(`No markdown found for ${fileName} at path: ${markdownContent}`);
       } 
       return (
-        <DocContainer heading={fileName} raw={rawContent} markdown={md}>
+        <DocContainer type="base" heading={fileName} raw={rawContent} markdown={md}>
           {Component ? <Component /> : <div>Component not found: {path}</div>}
         </DocContainer>
       );

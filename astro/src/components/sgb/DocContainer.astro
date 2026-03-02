@@ -1,43 +1,104 @@
 ---
-import { Code } from "astro/components";
 import { marked } from 'marked';
+import { Code } from "astro/components";
+import Heading from './Heading.astro';
+import Section from './Section.astro';
+import SubSection from './SubSection.astro';
 
 export interface Props {
   raw: string | null | undefined;
   heading: string;
   markdown?: string | null | undefined;
+  type?: 'component' | 'base';
 }
 
-const { raw, heading, markdown } = Astro.props;
+const { raw, heading, markdown, type } = Astro.props;
 
 const html = await Astro.slots.render("default");
 
+// Heading
+const headingId = `sg-${type}-${heading.toLowerCase().replace(/\s+/g, '-')}`;
 
+// Markdown Docs
 let parsedMarkdown;
 if (markdown) {
   console.log('Parsing markdown content');
   parsedMarkdown = marked.parse(markdown);
   console.log('Parsed markdown HTML:', parsedMarkdown);
-} 
+}
 ---
+<Section>
+  <Heading level="2" id={headingId}>{heading}</Heading>
+  <SubSection>
+    <Fragment set:html={html} />
+  </SubSection>
+  {raw && (
+    <SubSection class="sg-raw-example">
+      <details>
+        <summary class="sg-view-code">View Code</summary>
+        <div class="sg-raw-example__inner">
+          <button type="button" class="sg-btn sg-btn--select">Copy Source</button>
+          <Code code={raw} lang="html" />
+        </div>
+      </details>
+      <a href="#">Back to top</a>
+    </SubSection>
+  )}
 
-<h2>{heading}</h2>
-<Fragment set:html={html} />
-{raw && (
-  <>
-    <h2>View Code</h2>
-    <Code code={raw} lang="html" />
-  </>
-)}
-
-{markdown && (
-  <>
-    <h2>{heading} Docs</h2>
-    <div class="markdown" set:html={parsedMarkdown} />
-  </>
-)}
+  {markdown && (
+    <SubSection>
+      <h2>{heading} Docs</h2>
+      <div class="markdown" set:html={parsedMarkdown} />
+    </SubSection>
+  )}
+</Section>
 
 <style>
+.sg-view-code {
+  cursor: pointer;
+  display: inline-block;
+  background: #e6e6e6;
+  padding: 0.5rem 1rem;
+}
+
+.sg-raw-example__inner {
+  position: relative;
+}
+
+.sg-btn--select {
+  display: inline-block;
+}
+
+::marker {
+  content: "";
+  display: none;
+}
+
+::details-content {
+    transition: height 0.5s ease, content-visibility 0.5s ease allow-discrete;
+    height: 0;
+    overflow: clip;
+}
+
+/* Browser supports interpolate-size */
+@supports (interpolate-size: allow-keywords) {
+    :root {
+        interpolate-size: allow-keywords;
+    }
+
+    [open]::details-content {
+        height: auto;
+    }
+}
+
+/* Fallback for browsers with no interpolate-size support */
+@supports not (interpolate-size: allow-keywords) {
+    [open]::details-content {
+        height: 150px;
+        overflow-y: scroll; /* In case the contents should be taller than 150px */
+    }
+}
+
 pre.astro-code {
   tab-size: 1rem;
 }

@@ -14,7 +14,9 @@
 *,
 *:before,
 *:after {
-  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
 }
 
 body {
@@ -25,11 +27,14 @@ body {
   background: #000;
   color: #fff;
   padding-bottom: 0.75rem;
+  padding-bottom: 12px; /* For older browsers */
   padding-top: 0.75rem;
+  padding-top: 12px; /* For older browsers */
 }
 
 .sg-info,
 .sg-section-group {
+  padding-bottom: 32px; /* For older browsers */
   padding-bottom: 2rem;
 }
 
@@ -39,7 +44,9 @@ body {
 
 .sg-main,
 .sg-sidebar {
+  padding-top: 24px; /* For older browsers */
   padding-top: 1.5rem;
+  padding-bottom: 16px; /* For older browsers */
   padding-bottom: 1rem;
 }
 
@@ -47,7 +54,9 @@ body {
   background: #3d3d3d;
   color: #fff;
   font-size: 80%;
+  padding-left: 16px; /* For older browsers */
   padding-left: 1rem;
+  padding-right: 16px; /* For older browsers */
   padding-right: 1rem;
 }
 
@@ -55,7 +64,11 @@ body {
   opacity: 0;
   position: absolute;
   top: -100%;
-  transition: opacity 0.6s ease-out;
+  -webkit-transition: opacity 0.6s ease-out;
+     -moz-transition: opacity 0.6s ease-out;
+      -ms-transition: opacity 0.6s ease-out;
+       -o-transition: opacity 0.6s ease-out;
+          transition: opacity 0.6s ease-out;
 }
 
 .js.nav-is-active .sg-sidebar {
@@ -94,8 +107,6 @@ body {
 .sg-container:after,
 .sg-clearfix:before,
 .sg-clearfix:after,
-.sg-section:before,
-.sg-section:after,
 .sg-markup-controls:before,
 .sg-markup-controls:after{
   content:"";
@@ -105,7 +116,6 @@ body {
 
 .sg-container:after,
 .sg-clearfix:after,
-.sg-section:after,
 .sg-markup-controls:after {
   clear: both;
 }
@@ -151,9 +161,6 @@ body {
 .sg-font2,
 .sg-logo em,
 .sg-nav-toggle,
-.sg-h1,
-.sg-h2,
-.sg-h3,
 .sg-color-name,
 .sg-font-list dt  {
   font-family: "HelveticaNeue-Medium", "Helvetica Neue Medium", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
@@ -201,7 +208,11 @@ body {
   padding: 5px 8px; /* For older browsers */
   padding: 0.3125rem 0.5rem;
   text-decoration: none;
-  transition: all .15s ease-in;
+  -webkit-transition: all .15s ease-in;
+     -moz-transition: all .15s ease-in;
+      -ms-transition: all .15s ease-in;
+       -o-transition: all .15s ease-in;
+          transition: all .15s ease-in;
 }
 
 .sg-nav-toggle:hover {
@@ -234,7 +245,11 @@ body {
   padding: .35em 0 .35em .5em;
   text-decoration: none;
   text-transform: capitalize;
-  transition: all .15s ease-in;
+  -webkit-transition: all .15s ease-in;
+     -moz-transition: all .15s ease-in;
+      -ms-transition: all .15s ease-in;
+       -o-transition: all .15s ease-in;
+          transition: all .15s ease-in;
 }
 
 .sg-nav-group a:hover,
@@ -254,30 +269,7 @@ body {
 
 /* Typography
 ---------------------------------------------------------------------------- */
-.sg-h1,
-.sg-h2,
-.sg-h3 {
-  margin-bottom: 1em;
-  margin-top: 0;
-}
 
-.sg-h1 {
-  font-size: 2em;
-  padding-bottom: .2em;
-  text-transform: capitalize;
-}
-
-.sg-h2 {
-  border-bottom: 1px solid #ddd;
-  font-size: 1.75em;
-  margin-bottom: .75em;
-  padding-bottom: .2em;
-  text-transform: capitalize;
-}
-
-.sg-h3 {
-  font-size: 1.5em;
-}
 
 .sg-about p {
   font-size: 1.1em;
@@ -301,8 +293,7 @@ body {
   float: right;
 }
 
-.sg-btn--source,
-.sg-btn--select {
+.sg-btn--source {
   display: none;
 }
 
@@ -358,12 +349,6 @@ body {
   z-index: 99;
 }
 
-/* Sections
----------------------------------------------------------------------------- */
-.sg-section {
-  margin-bottom: 32px; /* For older browsers */
-  margin-bottom: 3rem;
-}
 
 /* Colors
 ---------------------------------------------------------------------------- */
@@ -483,7 +468,11 @@ body {
   position: absolute;
   top: -100%;
   width: 1px;
-  transition: opacity 0.6s ease-out;
+  -webkit-transition: opacity 0.6s ease-out;
+     -moz-transition: opacity 0.6s ease-out;
+      -ms-transition: opacity 0.6s ease-out;
+       -o-transition: opacity 0.6s ease-out;
+          transition: opacity 0.6s ease-out;
 }
 
 /* Show source code blocks when active or JS is not enabled */

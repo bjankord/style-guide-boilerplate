@@ -28,7 +28,7 @@ allPaths.sort((a, b) => {
       const Component = modules[path]?.default ?? null;
       const rawContent = rawModules[path] ?? '// Source code not available';
       return (
-        <DocContainer heading={fileName} raw={rawContent}>
+        <DocContainer type="component" heading={fileName} raw={rawContent}>
           {Component ? <Component /> : <div>Component not found: {path}</div>}
         </DocContainer>
       );
