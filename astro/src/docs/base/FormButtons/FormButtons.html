@@ -1,0 +1,14 @@
+<form>
+  <fieldset>
+    <legend>Buttons</legend>
+    <p><input type="button" value="Input type button"></p>
+    <p><input type="reset" value="Input type reset"></p>
+    <p><input type="submit" value="Input type submit"></p>
+    <p><input type="submit" value="Input type submit disabled" disabled></p>
+    <p><button type="button">Button type button</button></p>
+    <p><button type="reset">Button type reset</button></p>
+    <p><button type="submit">Button type submit</button></p>
+    <p><button type="button" disabled>Button type button disabled</button></p>
+    <p><button>Button</button></p>
+  </fieldset>
+</form>

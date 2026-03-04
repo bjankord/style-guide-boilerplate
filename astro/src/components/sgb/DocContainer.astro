@@ -18,6 +18,7 @@ const html = await Astro.slots.render("default");
 
 // Heading
 const headingId = `sg-${type}-${heading.toLowerCase().replace(/\s+/g, '-')}`;
+const formattedHeading = heading.replace(/([a-z])([A-Z])/g, '$1 $2').trim();
 
 // Markdown Docs
 let parsedMarkdown;
@@ -27,9 +28,9 @@ if (markdown) {
   console.log('Parsed markdown HTML:', parsedMarkdown);
 }
 ---
-<Section>
-  <Heading level="2" id={headingId}>{heading}</Heading>
-  <SubSection>
+<Section class="sg-doc-container">
+  <Heading level="2" id={headingId}>{formattedHeading}</Heading>
+  <SubSection class="sg-example">
     <Fragment set:html={html} />
   </SubSection>
   {raw && (
@@ -37,16 +38,18 @@ if (markdown) {
       <details>
         <summary class="sg-view-code">View Code</summary>
         <div class="sg-raw-example__inner">
-          <button type="button" class="sg-btn sg-btn--select">Copy Source</button>
+          <button type="button" class="sg-btn sg-btn--copy">Copy Source</button>
           <Code code={raw} lang="html" />
         </div>
       </details>
-      <a href="#">Back to top</a>
+      <div class="sg-doc-container__footer">
+        <a href="#">Back to top</a>
+      </div>
     </SubSection>
   )}
 
   {markdown && (
-    <SubSection>
+    <SubSection class="sg-docs">
       <h2>{heading} Docs</h2>
       <div class="markdown" set:html={parsedMarkdown} />
     </SubSection>
@@ -59,14 +62,25 @@ if (markdown) {
   display: inline-block;
   background: #e6e6e6;
   padding: 0.5rem 1rem;
+  border-radius: 5px;
+  font-family: sans-serif;
 }
 
 .sg-raw-example__inner {
   position: relative;
 }
 
-.sg-btn--select {
+.sg-btn--copy {
   display: inline-block;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.sg-doc-container__footer {
+  font-family: sans-serif;
+  padding-top: 0.5rem;
+  text-align: right;
 }
 
 ::marker {
@@ -101,5 +115,7 @@ if (markdown) {
 
 pre.astro-code {
   tab-size: 1rem;
+  margin: 0;
+  padding: 1rem;
 }
 </style>

@@ -1,4 +1,17 @@
-<div class="sg-sub-section">
+---
+export interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+
+const classes = [
+  'sg-sub-section',
+  className
+].filter(Boolean).join(' ');
+
+---
+<div class={classes}>
   <slot />
 </div>
 
