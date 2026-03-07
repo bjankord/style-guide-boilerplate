@@ -1,0 +1,45 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+
+import DocContainer from "../sgb/DocContainer.astro";
+
+const baseDir = new URL(`../../docs/base`, import.meta.url);
+const basePath = path.resolve(baseDir.pathname);
+
+const baseDirectories = fs
+  .readdirSync(basePath, { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name);
+
+const baseExamples = import.meta.glob<{ default: any }>('../../docs/base/**/*.html', { eager: true });
+const rawBaseExamples = import.meta.glob<string>('../../docs/base/**/*.html', { eager: true, query: '?raw', import: 'default' });
+const markdownDocs = import.meta.glob<string>('../../docs/base/**/docs.md', { eager: true, query:'?raw', import: 'default' });
+---
+{baseDirectories.length === 0 ? (
+  <div>No base examples found</div>
+) : (
+  <>
+    {baseDirectories.map((dir: any) => {
+      console.log('Processing dir:', dir);
+      const heading = dir;
+      const Component = baseExamples[`../../docs/base/${dir}/${dir}.html`]?.default ?? null;
+      const rawContent = rawBaseExamples[`../../docs/base/${dir}/${dir}.html`] ?? null;
+      const markdownContent = markdownDocs[`../../docs/base/${dir}/docs.md`] ?? null;
+
+      if (Component || markdownContent) {
+        return (
+          <DocContainer 
+            type="base" 
+            heading={heading} 
+            raw={rawContent} 
+            markdown={markdownContent}
+          >
+            {Component ? <Component /> : null}
+          </DocContainer>
+        );
+      }
+      return null;
+    })}
+  </>
+)}

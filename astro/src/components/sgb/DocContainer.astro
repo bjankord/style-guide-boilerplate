@@ -50,13 +50,16 @@ if (markdown) {
 
   {markdown && (
     <SubSection class="sg-docs">
-      <h2>{heading} Docs</h2>
       <div class="markdown" set:html={parsedMarkdown} />
     </SubSection>
   )}
 </Section>
 
 <style>
+.sg-raw-example__inner {
+  position: relative;
+}
+
 .sg-view-code {
   cursor: pointer;
   display: inline-block;
@@ -66,24 +69,7 @@ if (markdown) {
   font-family: sans-serif;
 }
 
-.sg-raw-example__inner {
-  position: relative;
-}
-
-.sg-btn--copy {
-  display: inline-block;
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-
-.sg-doc-container__footer {
-  font-family: sans-serif;
-  padding-top: 0.5rem;
-  text-align: right;
-}
-
-::marker {
+.sg-raw-example ::marker {
   content: "";
   display: none;
 }
@@ -117,5 +103,18 @@ pre.astro-code {
   tab-size: 1rem;
   margin: 0;
   padding: 1rem;
+}
+
+.sg-btn--copy {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.sg-doc-container__footer {
+  font-family: sans-serif;
+  padding-top: 0.5rem;
+  text-align: right;
 }
 </style>
