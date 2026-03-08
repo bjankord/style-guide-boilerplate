@@ -4,6 +4,7 @@ import { Code } from "astro/components";
 import Heading from './Heading.astro';
 import Section from './Section.astro';
 import SubSection from './SubSection.astro';
+import BackToTop from './BackToTop.astro';
 
 export interface Props {
   raw: string | null | undefined;
@@ -42,9 +43,7 @@ if (markdown) {
           <Code code={raw} lang="html" />
         </div>
       </details>
-      <div class="sg-doc-container__footer">
-        <a href="#">Back to top</a>
-      </div>
+      <BackToTop />
     </SubSection>
   )}
 
@@ -61,12 +60,12 @@ if (markdown) {
 }
 
 .sg-view-code {
+  background: #e6e6e6;
+  border-radius: 5px;
   cursor: pointer;
   display: inline-block;
-  background: #e6e6e6;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
   font-family: sans-serif;
+  padding: 0.5rem 1rem;
 }
 
 .sg-raw-example ::marker {

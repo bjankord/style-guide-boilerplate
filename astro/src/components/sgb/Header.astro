@@ -1,0 +1,71 @@
+<header id="top" class="sg-header" role="banner">
+  <h1 class="sg-logo">
+    <span class="sg-logo-initials">SG</span>
+    <span class="sg-logo-full">STYLE GUIDE</span> <em>BOILERPLATE</em>
+  </h1>
+  <label class="sg-nav-toggle" for="menu-toggle">Menu 
+    <input type="checkbox" id="menu-toggle" />
+  </label>
+</header>
+
+<style>
+.sg-header {
+  background: #000;
+  color: #fff;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.sg-logo {
+  font-size: 1em;
+  line-height: 2;
+  margin: 0;
+  padding: 0;
+}
+
+.sg-logo-full {
+  display: none;
+}
+
+.sg-logo em {
+  font-style: normal;
+}
+
+@media screen and (min-width: 650px) {
+  .sg-logo-initials {
+    display: none;
+  }
+
+  .sg-logo-full {
+    display: inline;
+  }
+}
+
+.sg-nav-toggle {
+  background-color: #000;
+  border-radius: 5px;
+  border: 1px solid #7C7C7C;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.3125rem 0.5rem;
+  text-decoration: none;
+  transition: all .15s ease-in;
+}
+
+.sg-nav-toggle:hover {
+  border-color: #9c9c9c;
+}
+
+.sg-nav-toggle input {
+  display: none;
+}
+
+@media screen and (min-width: 1025px) {
+  .sg-nav-toggle {
+    display: none;
+  }
+}
+
+</style>

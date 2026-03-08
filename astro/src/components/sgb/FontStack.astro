@@ -1,0 +1,60 @@
+---
+import BackToTop from "./BackToTop.astro"
+---
+<!-- Add your fonts below -->
+<div class="sg-font-stacks sg-section">
+  <h2 id="sg-fontStacks" class="sg-h2">Font Stacks</h2>
+  <dl class="sg-font-list">
+    <dt>Primary Font:</dt>
+    <dd style='font-family: "HelveticaNeue", Helvetica, Arial, sans-serif;'>"HelveticaNeue", Helvetica, Arial, sans-serif;</dd>
+
+    <dt>Primary Font Italic:</dt>
+    <dd style='font-family: "HelveticaNeue", Helvetica, Arial, sans-serif; font-style: italic;'>"HelveticaNeue", Helvetica, Arial, sans-serif;</dd>
+
+    <dt>Primary Font Bold:</dt>
+    <dd style='font-family: "HelveticaNeue", Helvetica, Arial, sans-serif; font-weight: 800;'>"HelveticaNeue", Helvetica, Arial, sans-serif;</dd>
+
+    <dt>Secondary Font:</dt>
+    <dd style='font-family: Georgia, Times, "Times New Roman", serif;'>Georgia, Times, "Times New Roman", serif;</dd>
+
+    <dt>Secondary Font Italic:</dt>
+    <dd style='font-family: Georgia, Times, "Times New Roman", serif; font-style: italic;'>Georgia, Times, "Times New Roman", serif;</dd>
+
+    <dt>Secondary Font Bold:</dt>
+    <dd style='font-family: Georgia, Times, "Times New Roman", serif; font-weight: 800;'>Georgia, Times, "Times New Roman", serif;</dd>
+  </dl>
+  <BackToTop />
+</div>
+
+<style>
+.sg-font-list,
+.sg-font-list li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sg-font-list {
+  font-size: 1.1em;
+}
+
+.sg-font-list dt {
+  display: block;
+  padding-bottom: .25em;
+}
+
+.sg-font-list dd {
+  border-bottom: 1px solid #ddd;
+  display: block;
+  margin-bottom: .75em;
+  margin-left: 0;
+  padding-bottom: .75em;
+}
+
+@media only screen and (min-width: 760px) {
+  .sg-font-list dt {
+    float: left;
+    padding-right: .25em;
+  }
+}
+</style>
