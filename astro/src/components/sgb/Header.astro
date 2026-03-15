@@ -1,11 +1,13 @@
+---
+import NavToggle from "./NavToggle.astro";
+---
+
 <header id="top" class="sg-header" role="banner">
   <h1 class="sg-logo">
     <span class="sg-logo-initials">SG</span>
     <span class="sg-logo-full">STYLE GUIDE</span> <em>BOILERPLATE</em>
   </h1>
-  <label class="sg-nav-toggle" for="menu-toggle">Menu 
-    <input type="checkbox" id="menu-toggle" />
-  </label>
+  <NavToggle>Menu</NavToggle>
 </header>
 
 <style>
@@ -58,8 +60,15 @@
   border-color: #9c9c9c;
 }
 
-.sg-nav-toggle input {
-  display: none;
+.sg-nav-toggle input{
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
 }
 
 @media screen and (min-width: 1025px) {

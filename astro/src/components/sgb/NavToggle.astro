@@ -1,0 +1,17 @@
+<button class="sg-nav-toggle" aria-expanded="false">Menu</button>
+
+<script is:inline type="module">
+document.querySelector('.sg-nav-toggle')
+  .addEventListener('click', e => {
+    const expanded = e.target.getAttribute('aria-expanded') === 'true';
+    e.target.setAttribute('aria-expanded', !expanded);
+  });
+</script>
+
+<style>
+  @media screen and (min-width: 1025px) {
+    .sg-nav-toggle {
+      display: none;
+    }
+  }
+</style>
