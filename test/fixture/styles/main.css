@@ -1,0 +1,97 @@
+:root {
+  --brand: rgb(26, 188, 156);
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 2rem;
+}
+
+.button {
+  background: var(--brand);
+  border: 0;
+  color: #fff;
+  padding: 0.5em 1em;
+}
+
+/* Design token pages. The style guide leaves these to the project. */
+.swatches {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+}
+
+.swatch-color {
+  aspect-ratio: 5 / 3;
+  border: 1px solid #ddd;
+  border-radius: 0.25em;
+}
+
+.swatch-name {
+  font-weight: 600;
+  padding: 0.5em 0 0.25em;
+}
+
+.swatch-value,
+.font-sample-value {
+  color: #6b6b6b;
+  font-size: 0.875em;
+}
+
+.font-samples {
+  margin: 0 0 1.5rem;
+}
+
+.font-sample {
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+}
+
+.font-sample-name {
+  font-weight: 600;
+  margin-bottom: 0.25em;
+}
+
+.font-sample-text {
+  font-size: 1.5em;
+  margin: 0 0 0.25em;
+}
+
+.font-sample-value {
+  margin: 0;
+}
+
+.token-table {
+  border-collapse: collapse;
+  margin: 0 0 1.5rem;
+}
+
+.token-table th,
+.token-table td {
+  border-bottom: 1px solid #ddd;
+  padding: 0.25rem 1rem 0.25rem 0;
+  text-align: left;
+}
+
+.spacing-scale {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+}
+
+.spacing-step {
+  align-items: center;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 2rem 6rem 1fr;
+  margin-bottom: 0.5rem;
+}
+
+.spacing-bar {
+  background: var(--brand);
+  display: inline-block;
+  height: 1rem;
+}

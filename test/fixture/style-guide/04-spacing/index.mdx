@@ -1,0 +1,16 @@
+import spacing from '../../tokens/spacing.json'
+import { TokenTable } from '../../components/TokenTable.jsx'
+
+Use the spacing scale for margins, padding and gaps. Each step is a CSS
+variable, like `var(--space-3)`.
+
+<ul class="spacing-scale">
+  {Object.entries(spacing).map(([name, value]) => (
+    <li class="spacing-step">
+      <span class="spacing-bar" style={{ width: `var(--${name})` }} />
+      <code>--{name}</code> {value}
+    </li>
+  ))}
+</ul>
+
+<TokenTable tokens={spacing} />

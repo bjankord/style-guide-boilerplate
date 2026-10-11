@@ -1,0 +1,13 @@
+import fonts from '../../tokens/fonts.json'
+
+<dl class="font-samples">
+  {fonts.map((font) => (
+    <div class="font-sample">
+      <dt class="font-sample-name">{font.name}</dt>
+      <dd class="font-sample-text" style={{ fontFamily: font.family, fontWeight: font.weight }}>
+        The quick brown fox jumps over the lazy dog
+      </dd>
+      <dd class="font-sample-value"><code>{font.family}</code></dd>
+    </div>
+  ))}
+</dl>

@@ -1,0 +1,4 @@
+[
+  { "name": "Body", "family": "Georgia, serif" },
+  { "name": "Body bold", "family": "Georgia, serif", "weight": 700 }
+]
