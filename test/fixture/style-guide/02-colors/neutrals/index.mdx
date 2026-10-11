@@ -1,0 +1,11 @@
+import neutrals from '../../../tokens/neutrals.json'
+
+<ul class="swatches">
+  {Object.entries(neutrals).map(([name, value]) => (
+    <li class="swatch">
+      <div class="swatch-color" style={`background: ${value}`} />
+      <div class="swatch-name">{name}</div>
+      <code class="swatch-value">{value}</code>
+    </li>
+  ))}
+</ul>

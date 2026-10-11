@@ -1,5 +1,6 @@
 import MarkdownIt from 'markdown-it'
 import { bundledLanguages, createHighlighter } from 'shiki'
+import { renderToString } from './jsx-runtime.js'
 
 const THEMES = { light: 'github-light', dark: 'github-dark' }
 
@@ -12,6 +13,8 @@ const ALIASES = /** @type {Record<string, string>} */ ({ htm: 'html', markup: 'h
  *   Highlights code as a `<pre class="shiki">` block.
  * @property {(markdown: string) => Promise<string>} renderMarkdown
  *   Renders Markdown to HTML, highlighting fenced code blocks.
+ * @property {(file: string, name: string) => Promise<string>} renderMdx
+ *   Renders an `.mdx` doc to HTML. `name` labels it in error messages.
  */
 
 /** @param {string} value */
@@ -27,9 +30,16 @@ export function escapeHtml(value) {
  * Creates a Markdown and code renderer backed by one Shiki highlighter.
  * The highlighter loads lazily, along with each language the first time it's used.
  *
+ * MDX docs load through `loadMdx`. An MDX error doesn't stop the page: the doc
+ * shows the error instead, and `onError` hears about it.
+ *
+ * @param {{
+ *   loadMdx?: (file: string) => Promise<(props: object) => unknown>,
+ *   onError?: (message: string) => void,
+ * }} [options]
  * @returns {Renderer}
  */
-export function createRenderer() {
+export function createRenderer({ loadMdx, onError } = {}) {
   /** @type {Promise<import('shiki').Highlighter> | undefined} */
   let highlighterPromise
 
@@ -90,6 +100,18 @@ export function createRenderer() {
       // markdown-it uses the returned string as-is when it starts with `<pre`.
       md.set({ highlight: (code, lang) => highlightSync(highlighter, code.replace(/\n$/, ''), lang) })
       return md.renderer.render(tokens, md.options, env)
+    },
+
+    async renderMdx(file, name) {
+      try {
+        if (!loadMdx) throw new Error('MDX docs need an MDX loader.')
+        const Doc = await loadMdx(file)
+        return renderToString(Doc({}))
+      } catch (error) {
+        const message = `MDX error in ${name}: ${/** @type {Error} */ (error).message}`
+        onError?.(message)
+        return `<pre class="sg-error">${escapeHtml(message)}</pre>`
+      }
     },
   }
 }

@@ -8,14 +8,15 @@ final version is tagged `v3-final`.
 * Added hot reload for project CSS and automatic page reloads for content changes
 * Added static builds with `vite build`, as a dedicated project or mounted in an existing app (`path`, `build` options)
 * Added project CSS through Vite (Sass, PostCSS and so on), or as plain URLs
-* Added `colors` and `fonts` front matter, inline or from a `.json` file, in place of hand-written swatch markup
+* Added optional `.mdx` docs, rendered to static HTML at build time, for documenting design tokens from imported data with your own markup and components
+* Removed the built-in color and font sections; projects now render their design tokens however they like
 * Added a section → pattern → variant content layout, with `index.md` docs for section and pattern folders
 * Added number prefixes and front matter (`title`, `order`) for ordering and titles
 * Added a `nav.depth` option to control how deep the sidebar goes
 * Added build-time syntax highlighting with Shiki, with light and dark themes
 * Added a Copy button using the Clipboard API
 * Added a static search of the nav items, using a native `<datalist>`
-* Changed docs to sibling `.md` files next to each example
+* Changed docs to sibling `.md` (or `.mdx`) files next to each example
 * Changed "Getting Started", Colors and Fonts from fixed sections to ordinary content
 * Rewrote `sg-style.css` with CSS grid, `--sg-*` custom properties and dark mode for the guide's UI
 * Removed HTML docs, Parsedown, Prism and the old-IE stylesheet

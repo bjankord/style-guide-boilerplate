@@ -113,25 +113,26 @@ The sidebar lists sections, their patterns, and the variants of patterns that
 have more than one. Set `nav.depth` to `2` or `1` to stop at patterns or
 sections.
 
-A **variant folder** holds one `.html` example and an optional `.md` doc, with
-any file names (`index.md` reads well for the doc). Its title and order come
-from the folder name. Variant files and folders can sit side by side in a
-pattern, and they sort together. A variant folder with more than one `.html`
-or `.md` file, or with folders inside it, is skipped with a warning.
+A **variant folder** holds one `.html` example and an optional `.md` or `.mdx`
+doc, with any file names (`index.md` reads well for the doc). Its title and
+order come from the folder name. Variant files and folders can sit side by side
+in a pattern, and they sort together. A variant folder with more than one
+`.html` file or doc, or with folders inside it, is skipped with a warning.
 
 Examples always live in a pattern folder, even when there's only one, like
-`04-base/lists/lists.html`. An `.html` or `.md` file directly in a section
-folder (other than `index.md`) or in the content root is skipped with a
-warning that suggests where to move it.
+`06-base/lists/lists.html`. An `.html`, `.md` or `.mdx` file directly in a
+section folder (other than its `index` doc) or in the content root is skipped
+with a warning that suggests where to move it.
 
 - **Each `.html` file is an example.** It's shown rendered, followed by its
   source in a **View source** panel with a **Copy** button.
-- **Docs are sibling `.md` files.** `02-with-links.md` documents
-  `02-with-links.html`, and in a variant folder the `.md` file documents the
-  `.html` file. A `.md` file without an example is shown as a doc on its own.
-  Markdown can include raw HTML.
-- **`index.md`** documents its section or pattern folder. It's shown under the
-  folder's heading.
+- **Docs are sibling `.md` or `.mdx` files.** `02-with-links.md` documents
+  `02-with-links.html`, and in a variant folder the doc file documents the
+  `.html` file. A doc without an example is shown on its own. Markdown can
+  include raw HTML. Use [MDX](#design-tokens-with-mdx) when a doc needs to
+  build its content from data.
+- **`index.md`** (or `index.mdx`) documents its section or pattern folder. It's
+  shown under the folder's heading.
 - **Titles come from file and folder names.** `form-buttons` becomes "Form
   buttons".
 - **Ordering:** a number prefix like `01-` sets the order and is removed from
@@ -149,49 +150,80 @@ warning that suggests where to move it.
   Use `.button` for actions.
   ```
 
-### Colors and fonts
+### Design tokens with MDX
 
-Add `colors` or `fonts` to the front matter of any `index.md` or variant `.md`
-file, and the guide renders swatches or font samples under its doc. Values can
-be CSS variables, so swatches render through your real CSS.
+Any doc can be an [MDX](https://mdxjs.com/) file instead: `index.mdx` for a
+section or pattern, or `name.mdx` beside an example. MDX is Markdown that can
+`import` data and use JSX, which is how you document design tokens (colors,
+fonts, spacing, or anything else) straight from your project's token files:
 
-```md
+```mdx
 ---
-colors:
-  - name: Primary
-    value: var(--brand-primary)
-  - name: Accent
-    value: "#e67e22"
-fonts:
-  - name: Body
-    value: '"Inter", sans-serif'
-  - name: Body bold
-    value: '"Inter", sans-serif'
-    weight: 700
+title: Spacing
 ---
-Use Primary for actions and links.
+import spacing from '../../src/tokens/spacing.json'
+
+Use the spacing scale for margins and gaps.
+
+<ul class="spacing-scale">
+  {Object.entries(spacing).map(([name, value]) => (
+    <li>
+      <span class="spacing-bar" style={`width: ${value}`} />
+      <code>{name}</code> {value}
+    </li>
+  ))}
+</ul>
 ```
 
-Each list can also be an object of `name: value` pairs, or a path to a `.json`
-file with either shape, relative to the `.md` file. That lets you keep one list
-of tokens for your project and the guide:
+MDX docs render to static HTML at build time; no JavaScript from them reaches
+the browser. Imports resolve through Vite, so JSON files, aliases and your own
+components work, and editing an imported file reloads the page. Values can be
+CSS variables, so previews render through your real CSS.
 
-```md
----
-colors: ../../src/tokens/neutrals.json
----
-```
+The JSX reads like HTML: `class` and `for` work (as do `className` and
+`htmlFor`), and `style` can be a string or an object. Text and attribute
+values are escaped.
 
-```json
-{
-  "Gray 100": "var(--gray-100)",
-  "Gray 900": "var(--gray-900)"
+**How tokens look is up to you.** The guide doesn't ship components or styles
+for swatches, type samples or spacing scales: your MDX writes the markup to
+match the shape of your token files, and your project's `styles` style it. To
+reuse markup across pages, write your own component and import it:
+
+```jsx
+// src/style-guide/Swatches.jsx
+export function Swatches({ colors }) {
+  return (
+    <ul class="swatches">
+      {Object.entries(colors).map(([name, value]) => (
+        <li class="swatch">
+          <div class="swatch-color" style={`background: ${value}`} />
+          <code>{name}</code> {value}
+        </li>
+      ))}
+    </ul>
+  )
 }
 ```
 
-Colors take `name` and `value`. Fonts take `name` and a `font-family` `value`,
-plus optional `weight` and `style`. Entries without a `name` or `value` are
-skipped with a warning.
+```mdx
+import { Swatches } from '../../src/style-guide/Swatches.jsx'
+import colors from '../../src/tokens/colors.json'
+
+<Swatches colors={colors} />
+```
+
+Things to know:
+
+- MDX follows JSX rules: close void tags (`<br />`), use `{/* comments */}`
+  instead of `<!-- -->`, and `{` and `<` are special in text.
+- Plain `.md` docs stay plain Markdown. Use `.mdx` only where you need it.
+- MDX docs run code at build time, like any file in your project.
+- `.jsx` and `.tsx` components that MDX docs import render with the guide's
+  string JSX runtime, not React, so they should be plain functions that return
+  markup (no hooks or state). This only applies inside the style guide.
+- An MDX error shows in place of the doc and as a warning in Vite's output.
+- If a folder has both `index.md` and `index.mdx` (or an example has both
+  docs), the `.mdx` file wins and the other is skipped with a warning.
 
 ## Search
 
@@ -217,8 +249,8 @@ served at `/style-guide/` in development, under your app's `base`. By default
 ## Development
 
 - Edits to your CSS hot reload in place.
-- Adding, changing or removing `.html` and `.md` files reloads the page, and
-  so does editing a `.json` file that front matter points at.
+- Adding, changing or removing `.html`, `.md` and `.mdx` files reloads the
+  page, and so does editing a file an MDX doc imports, like a token `.json`.
 - Changes to the plugin options in `vite.config.js` restart the dev server.
 
 ## Theming
@@ -258,9 +290,11 @@ them.
    supported; convert them to Markdown, which can contain raw HTML.
 4. Move the "Getting Started" text from `index.php` into a section's
    `index.md`, such as `style-guide/01-getting-started/index.md`.
-5. Move your colors and font stacks from `index.php` into `colors` and `fonts`
-   front matter, for example in `style-guide/02-colors/index.md` and
-   `style-guide/03-fonts/index.md`. See [Colors and fonts](#colors-and-fonts).
+5. Move your colors and font stacks from `index.php` into token files (like
+   `colors.json`), and render them with MDX docs such as
+   `style-guide/02-colors/index.mdx` and `style-guide/03-fonts/index.mdx`. The
+   v3 swatch and font markup is a good starting point, styled by your own CSS.
+   See [Design tokens with MDX](#design-tokens-with-mdx).
 6. Replace the `css/style.css` link with the `styles` option.
 7. Delete the PHP files. `npx vite` replaces `php -S`, and `npx vite build`
    replaces `php index.php > index.html`.

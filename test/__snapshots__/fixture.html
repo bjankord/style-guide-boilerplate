@@ -26,6 +26,7 @@
 <option value="Brand" data-sg-target="sg-colors-brand"></option>
 <option value="Neutrals" data-sg-target="sg-colors-neutrals"></option>
 <option value="Fonts" data-sg-target="sg-fonts"></option>
+<option value="Spacing" data-sg-target="sg-spacing"></option>
 <option value="Guidelines" data-sg-target="sg-guidelines"></option>
 <option value="Writing" data-sg-target="sg-guidelines-writing"></option>
 <option value="Base" data-sg-target="sg-base"></option>
@@ -44,7 +45,7 @@
 <label class="sg-visually-hidden" for="sg-search-sidebar">Search the style guide</label>
 <input class="sg-search-input" type="search" id="sg-search-sidebar" list="sg-search-list" placeholder="Search" autocomplete="off">
 </form>
-<ul class="sg-nav-list"><li class="sg-nav-group"><a href="#sg-getting-started">Getting started</a></li><li class="sg-nav-group"><a href="#sg-colors">Colors</a><ul class="sg-nav-list"><li><a href="#sg-colors-brand">Brand</a></li><li><a href="#sg-colors-neutrals">Neutrals</a></li></ul></li><li class="sg-nav-group"><a href="#sg-fonts">Fonts</a></li><li class="sg-nav-group"><a href="#sg-guidelines">Guidelines</a><ul class="sg-nav-list"><li><a href="#sg-guidelines-writing">Writing</a></li></ul></li><li class="sg-nav-group"><a href="#sg-base">Base</a><ul class="sg-nav-list"><li><a href="#sg-base-entities">Entities</a></li><li><a href="#sg-base-headings">Headings</a><ul class="sg-nav-list"><li><a href="#sg-base-headings-sizes">Sizes</a></li><li><a href="#sg-base-headings-with-links">With links</a></li></ul></li><li><a href="#sg-base-lists">Lists</a></li></ul></li><li class="sg-nav-group"><a href="#sg-components">Components</a><ul class="sg-nav-list"><li><a href="#sg-components-buttons">Button styles</a></li><li><a href="#sg-components-alerts">Alerts</a></li></ul></li></ul>
+<ul class="sg-nav-list"><li class="sg-nav-group"><a href="#sg-getting-started">Getting started</a></li><li class="sg-nav-group"><a href="#sg-colors">Colors</a><ul class="sg-nav-list"><li><a href="#sg-colors-brand">Brand</a></li><li><a href="#sg-colors-neutrals">Neutrals</a></li></ul></li><li class="sg-nav-group"><a href="#sg-fonts">Fonts</a></li><li class="sg-nav-group"><a href="#sg-spacing">Spacing</a></li><li class="sg-nav-group"><a href="#sg-guidelines">Guidelines</a><ul class="sg-nav-list"><li><a href="#sg-guidelines-writing">Writing</a></li></ul></li><li class="sg-nav-group"><a href="#sg-base">Base</a><ul class="sg-nav-list"><li><a href="#sg-base-entities">Entities</a></li><li><a href="#sg-base-headings">Headings</a><ul class="sg-nav-list"><li><a href="#sg-base-headings-sizes">Sizes</a></li><li><a href="#sg-base-headings-with-links">With links</a></li></ul></li><li><a href="#sg-base-lists">Lists</a></li></ul></li><li class="sg-nav-group"><a href="#sg-components">Components</a><ul class="sg-nav-list"><li><a href="#sg-components-buttons">Button styles</a></li><li><a href="#sg-components-alerts">Alerts</a></li></ul></li></ul>
 </div>
 </nav>
 <main class="sg-main" id="sg-main">
@@ -61,52 +62,25 @@
 <article class="sg-pattern" id="sg-colors-brand">
 <h3 class="sg-title sg-pattern-title">Brand</h3>
 <div class="sg-doc"><p>Brand colors for actions and links.</p>
-</div>
-<ul class="sg-color-grid">
-<li class="sg-color">
-<div class="sg-color-swatch" style="background: var(--brand)"></div>
-<div class="sg-color-name">Brand</div>
-<code class="sg-color-value">var(--brand)</code>
-</li>
-<li class="sg-color">
-<div class="sg-color-swatch" style="background: #000000"></div>
-<div class="sg-color-name">Black</div>
-<code class="sg-color-value">#000000</code>
-</li>
-</ul>
+<ul class="swatches"><li class="swatch"><div class="swatch-color" style="background: var(--brand)"></div><div class="swatch-name">Brand</div><code class="swatch-value">var(--brand)</code></li><li class="swatch"><div class="swatch-color" style="background: #000000"></div><div class="swatch-name">Black</div><code class="swatch-value">#000000</code></li></ul></div>
 <a class="sg-top-link" href="#sg-top">Back to top</a>
 </article>
 <article class="sg-pattern" id="sg-colors-neutrals">
 <h3 class="sg-title sg-pattern-title">Neutrals</h3>
-<ul class="sg-color-grid">
-<li class="sg-color">
-<div class="sg-color-swatch" style="background: #f2f2f2"></div>
-<div class="sg-color-name">Gray 100</div>
-<code class="sg-color-value">#f2f2f2</code>
-</li>
-<li class="sg-color">
-<div class="sg-color-swatch" style="background: #1a1a1a"></div>
-<div class="sg-color-name">Gray 900</div>
-<code class="sg-color-value">#1a1a1a</code>
-</li>
-</ul>
+<div class="sg-doc"><ul class="swatches"><li class="swatch"><div class="swatch-color" style="background: #f2f2f2"></div><div class="swatch-name">Gray 100</div><code class="swatch-value">#f2f2f2</code></li><li class="swatch"><div class="swatch-color" style="background: #1a1a1a"></div><div class="swatch-name">Gray 900</div><code class="swatch-value">#1a1a1a</code></li></ul></div>
 <a class="sg-top-link" href="#sg-top">Back to top</a>
 </article>
 </section>
 <section class="sg-group" id="sg-fonts">
 <h2 class="sg-title sg-group-title">Fonts</h2>
-<dl class="sg-font-list">
-<div class="sg-font">
-<dt class="sg-font-name">Body</dt>
-<dd class="sg-font-sample" style="font-family: Georgia, serif">The quick brown fox jumps over the lazy dog</dd>
-<dd class="sg-font-value"><code>Georgia, serif</code></dd>
-</div>
-<div class="sg-font">
-<dt class="sg-font-name">Body bold</dt>
-<dd class="sg-font-sample" style="font-family: Georgia, serif; font-weight: 700">The quick brown fox jumps over the lazy dog</dd>
-<dd class="sg-font-value"><code>Georgia, serif</code></dd>
-</div>
-</dl>
+<div class="sg-doc"><dl class="font-samples"><div class="font-sample"><dt class="font-sample-name">Body</dt><dd class="font-sample-text" style="font-family: Georgia, serif">The quick brown fox jumps over the lazy dog</dd><dd class="font-sample-value"><code>Georgia, serif</code></dd></div><div class="font-sample"><dt class="font-sample-name">Body bold</dt><dd class="font-sample-text" style="font-family: Georgia, serif; font-weight: 700">The quick brown fox jumps over the lazy dog</dd><dd class="font-sample-value"><code>Georgia, serif</code></dd></div></dl></div>
+</section>
+<section class="sg-group" id="sg-spacing">
+<h2 class="sg-title sg-group-title">Spacing</h2>
+<div class="sg-doc"><p>Use the spacing scale for margins, padding and gaps. Each step is a CSS
+variable, like <code>var(--space-3)</code>.</p>
+<ul class="spacing-scale"><li class="spacing-step"><span class="spacing-bar" style="width: var(--space-1)"></span><code>--space-1</code> 0.25rem</li><li class="spacing-step"><span class="spacing-bar" style="width: var(--space-2)"></span><code>--space-2</code> 0.5rem</li><li class="spacing-step"><span class="spacing-bar" style="width: var(--space-3)"></span><code>--space-3</code> 1rem</li><li class="spacing-step"><span class="spacing-bar" style="width: var(--space-4)"></span><code>--space-4</code> 2rem</li></ul>
+<table class="token-table"><thead><tr><th>Token</th><th>Value</th></tr></thead><tbody><tr><td><code>--space-1</code></td><td>0.25rem</td></tr><tr><td><code>--space-2</code></td><td>0.5rem</td></tr><tr><td><code>--space-3</code></td><td>1rem</td></tr><tr><td><code>--space-4</code></td><td>2rem</td></tr></tbody></table></div>
 </section>
 <section class="sg-group" id="sg-guidelines">
 <h2 class="sg-title sg-group-title">Guidelines</h2>

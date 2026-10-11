@@ -4,13 +4,12 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { normalizePath } from 'vite'
 import { createRenderer } from './markdown.js'
+import { createMdxLoader } from './mdx.js'
 import { isUrl, resolveOptions } from './options.js'
 import { STYLE_PLACEHOLDER, renderPage } from './render.js'
 import { scanContent } from './scanner.js'
 
 /** @typedef {import('./options.js').StyleGuideOptions} StyleGuideOptions */
-/** @typedef {import('./scanner.js').ColorEntry} ColorEntry */
-/** @typedef {import('./scanner.js').FontEntry} FontEntry */
 
 const CLIENT_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), 'client')
 const CLIENT_CSS = normalizePath(path.join(CLIENT_DIR, 'style-guide.css'))
@@ -27,7 +26,15 @@ const ENTRY_ID = '\0style-guide:entry'
  */
 export default function styleGuide(userOptions = {}) {
   const options = resolveOptions(userOptions)
-  const renderer = createRenderer()
+  /** @type {import('./mdx.js').MdxLoader | undefined} */
+  let mdx
+  const renderer = createRenderer({
+    loadMdx: (file) => {
+      mdx ??= createMdxLoader({ root: config.root, alias: config.resolve.alias })
+      return mdx.load(file)
+    },
+    onError: (message) => config.logger.warn(`[style-guide] ${message}`),
+  })
 
   /** @type {import('vite').ResolvedConfig} */
   let config
@@ -55,18 +62,15 @@ export default function styleGuide(userOptions = {}) {
   /** @type {import('vite').ViteDevServer | undefined} */
   let devServer
   /**
-   * JSON files that content front matter points at, normalized for comparison.
+   * Files that MDX docs depend on, like imported JSON, normalized for comparison.
    * @type {Set<string>}
    */
-  let dataFiles = new Set()
+  let mdxFiles = new Set()
 
   /** Scans and renders the guide, reusing the result until content changes. */
   const generate = () => {
     page ??= scanContent(contentDir).then(async (tree) => {
       for (const warning of tree.warnings) config.logger.warn(`[style-guide] ${warning}`)
-      dataFiles = new Set(tree.dataFiles.map((file) => normalizePath(file)))
-      // Data files usually live outside the content folder, so watch them too.
-      devServer?.watcher.add(tree.dataFiles)
       const html = await renderPage(
         tree,
         options,
@@ -81,7 +85,11 @@ export default function styleGuide(userOptions = {}) {
         },
         renderer,
       )
-      return { html, files: collectFiles(tree) }
+      // MDX imports often live outside the content folder, so watch them too.
+      const imported = (await mdx?.files() ?? []).filter((file) => !file.includes('/node_modules/'))
+      mdxFiles = new Set(imported.map((file) => normalizePath(file)))
+      devServer?.watcher.add(imported)
+      return { html, files: [...collectFiles(tree), ...imported] }
     })
     // Let the next request try again after an error.
     page.catch(() => {
@@ -193,16 +201,23 @@ export default function styleGuide(userOptions = {}) {
       },
     },
 
+    async closeBundle() {
+      await mdx?.close()
+      mdx = undefined
+    },
+
     configureServer(server) {
       devServer = server
       const base = config.base.startsWith('/') ? config.base : '/'
       const pageUrl = base + options.path.slice(1)
 
       server.watcher.add(contentDir)
-      const onChange = (/** @type {string} */ file) => {
+      const onChange = async (/** @type {string} */ file) => {
         const relative = path.relative(contentDir, file)
         const inContent = !relative.startsWith('..') && !path.isAbsolute(relative)
-        if (!inContent && !dataFiles.has(normalizePath(file))) return
+        const usedByMdx = mdxFiles.has(normalizePath(file))
+        if (!inContent && !usedByMdx) return
+        if (usedByMdx) await mdx?.invalidate()
         page = undefined
         server.ws.send({ type: 'full-reload', path: '*' })
       }
@@ -254,7 +269,7 @@ export default function styleGuide(userOptions = {}) {
  */
 function collectFiles(tree) {
   /** @type {Array<string | null>} */
-  const files = [...tree.dataFiles]
+  const files = []
   for (const section of tree.sections) {
     files.push(section.docFile)
     for (const pattern of section.patterns) {

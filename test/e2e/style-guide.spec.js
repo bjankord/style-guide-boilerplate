@@ -4,8 +4,9 @@ import { expect, test } from '@playwright/test'
 
 const FIXTURE = path.resolve(import.meta.dirname, '../../.tmp/e2e')
 const CSS_FILE = path.join(FIXTURE, 'styles/main.css')
-const NEW_EXAMPLE = path.join(FIXTURE, 'style-guide/06-components/cards/cards.html')
+const NEW_EXAMPLE = path.join(FIXTURE, 'style-guide/07-components/cards/cards.html')
 const NEUTRALS_FILE = path.join(FIXTURE, 'tokens/neutrals.json')
+const SPACING_DOC = path.join(FIXTURE, 'style-guide/04-spacing/index.mdx')
 
 test('renders the guide with the project CSS and script', async ({ page }) => {
   await page.goto('/')
@@ -16,6 +17,7 @@ test('renders the guide with the project CSS and script', async ({ page }) => {
     'Getting started',
     'Colors', 'Brand', 'Neutrals',
     'Fonts',
+    'Spacing',
     'Guidelines', 'Writing',
     'Base', 'Entities', 'Headings', 'Sizes', 'With links', 'Lists',
     'Components', 'Button styles', 'Alerts',
@@ -24,7 +26,7 @@ test('renders the guide with the project CSS and script', async ({ page }) => {
     'background-color',
     'rgb(26, 188, 156)',
   )
-  await expect(page.locator('#sg-colors-brand .sg-color-swatch').first()).toHaveCSS(
+  await expect(page.locator('#sg-colors-brand .swatch-color').first()).toHaveCSS(
     'background-color',
     'rgb(26, 188, 156)',
   )
@@ -122,7 +124,7 @@ test('hot reloads project CSS without reloading the page', async ({ page }) => {
 
     await writeFile(CSS_FILE, original.replace('rgb(26, 188, 156)', 'rgb(231, 76, 60)'))
 
-    await expect(page.locator('#sg-colors-brand .sg-color-swatch').first()).toHaveCSS(
+    await expect(page.locator('#sg-colors-brand .swatch-color').first()).toHaveCSS(
       'background-color',
       'rgb(231, 76, 60)',
     )
@@ -149,11 +151,11 @@ test('reloads the page when content changes', async ({ page }) => {
   }
 })
 
-test('reloads the page when a front matter JSON file changes', async ({ page }) => {
+test('reloads the page when JSON imported by an MDX doc changes', async ({ page }) => {
   const original = await readFile(NEUTRALS_FILE, 'utf8')
   try {
     await page.goto('/')
-    const names = page.locator('#sg-colors-neutrals .sg-color-name')
+    const names = page.locator('#sg-colors-neutrals .swatch-name')
     await expect(names).toHaveText(['Gray 100', 'Gray 900'])
 
     await writeFile(NEUTRALS_FILE, JSON.stringify({ 'Gray 500': '#808080' }))
@@ -161,5 +163,20 @@ test('reloads the page when a front matter JSON file changes', async ({ page }) 
     await expect(names).toHaveText(['Gray 500'])
   } finally {
     await writeFile(NEUTRALS_FILE, original)
+  }
+})
+
+test('shows edits to an MDX doc after reloading', async ({ page }) => {
+  const original = await readFile(SPACING_DOC, 'utf8')
+  try {
+    await page.goto('/')
+    const doc = page.locator('#sg-spacing .sg-doc')
+    await expect(doc).toContainText('Use the spacing scale')
+
+    await writeFile(SPACING_DOC, original.replace('Use the spacing scale', 'Use the updated scale'))
+
+    await expect(doc).toContainText('Use the updated scale')
+  } finally {
+    await writeFile(SPACING_DOC, original)
   }
 })

@@ -1,12 +1,10 @@
+import path from 'node:path'
 import { escapeHtml } from './markdown.js'
 
 /** @typedef {import('./scanner.js').ContentTree} ContentTree */
 /** @typedef {import('./scanner.js').Section} Section */
 /** @typedef {import('./scanner.js').Pattern} Pattern */
 /** @typedef {import('./scanner.js').Variant} Variant */
-/** @typedef {import('./scanner.js').DocData} DocData */
-/** @typedef {import('./scanner.js').ColorEntry} ColorEntry */
-/** @typedef {import('./scanner.js').FontEntry} FontEntry */
 /** @typedef {import('./options.js').ResolvedOptions} ResolvedOptions */
 /** @typedef {import('./markdown.js').Renderer} Renderer */
 
@@ -20,8 +18,6 @@ import { escapeHtml } from './markdown.js'
 
 /** Marks where the guide's stylesheet goes in a production build. */
 export const STYLE_PLACEHOLDER = '<!--style-guide:style-->'
-
-const FONT_SAMPLE = 'The quick brown fox jumps over the lazy dog'
 
 /**
  * @param {string} id
@@ -129,63 +125,37 @@ function renderSearch(place) {
 
 const BACK_TO_TOP = '<a class="sg-top-link" href="#sg-top">Back to top</a>'
 
-/** @param {ColorEntry[]} colors */
-function renderColors(colors) {
-  const swatches = colors.map(
-    (color) => `<li class="sg-color">
-<div class="sg-color-swatch" style="background: ${escapeHtml(color.value)}"></div>
-<div class="sg-color-name">${escapeHtml(color.name)}</div>
-<code class="sg-color-value">${escapeHtml(color.value)}</code>
-</li>`,
-  )
-  return `<ul class="sg-color-grid">
-${swatches.join('\n')}
-</ul>`
-}
-
-/** @param {FontEntry[]} fonts */
-function renderFonts(fonts) {
-  const rows = fonts.map((font) => {
-    const style = [
-      `font-family: ${font.value}`,
-      font.weight !== undefined ? `font-weight: ${font.weight}` : '',
-      font.style ? `font-style: ${font.style}` : '',
-    ].filter(Boolean)
-    return `<div class="sg-font">
-<dt class="sg-font-name">${escapeHtml(font.name)}</dt>
-<dd class="sg-font-sample" style="${escapeHtml(style.join('; '))}">${FONT_SAMPLE}</dd>
-<dd class="sg-font-value"><code>${escapeHtml(font.value)}</code></dd>
-</div>`
-  })
-  return `<dl class="sg-font-list">
-${rows.join('\n')}
-</dl>`
-}
+/**
+ * @typedef {object} RenderContext
+ * @property {Renderer} renderer
+ * @property {string} dir The content folder, so errors can name docs relative to it.
+ */
 
 /**
- * A node's Markdown doc, followed by any colors and fonts from its front matter.
+ * A node's doc: Markdown, or MDX rendered from its file.
  *
- * @param {{ doc: string | null } & DocData} node
- * @param {Renderer} renderer
+ * @param {{ doc: string | null, docFile: string | null }} node
+ * @param {RenderContext} ctx
  */
-async function renderDoc(node, renderer) {
-  return [
-    node.doc ? `<div class="sg-doc">${await renderer.renderMarkdown(node.doc)}</div>` : '',
-    node.colors?.length ? renderColors(node.colors) : '',
-    node.fonts?.length ? renderFonts(node.fonts) : '',
-  ]
-    .filter(Boolean)
-    .join('\n')
+async function renderDoc(node, ctx) {
+  if (!node.doc || !node.docFile) return ''
+  const html = node.docFile.toLowerCase().endsWith('.mdx')
+    ? await ctx.renderer.renderMdx(
+        node.docFile,
+        path.relative(ctx.dir, node.docFile).replaceAll(path.sep, '/'),
+      )
+    : await ctx.renderer.renderMarkdown(node.doc)
+  return `<div class="sg-doc">${html}</div>`
 }
 
 /**
  * A variant's doc, rendered example and source panel.
  *
  * @param {Variant} variant
- * @param {Renderer} renderer
+ * @param {RenderContext} ctx
  */
-async function renderVariantBody(variant, renderer) {
-  const parts = [await renderDoc(variant, renderer)]
+async function renderVariantBody(variant, ctx) {
+  const parts = [await renderDoc(variant, ctx)]
   if (variant.html !== null) {
     parts.push(
       `<div class="sg-preview">
@@ -195,7 +165,7 @@ ${variant.html}
       '<summary class="sg-source-toggle">View source</summary>',
       '<div class="sg-source-code">',
       '<button type="button" class="sg-btn sg-copy" data-sg-copy hidden>Copy</button>',
-      await renderer.highlight(variant.html, 'html'),
+      await ctx.renderer.highlight(variant.html, 'html'),
       '</div>',
       '</details>',
     )
@@ -208,22 +178,22 @@ ${variant.html}
  * gets its own heading.
  *
  * @param {Pattern} pattern
- * @param {Renderer} renderer
+ * @param {RenderContext} ctx
  */
-async function renderPattern(pattern, renderer) {
+async function renderPattern(pattern, ctx) {
   const parts = [
     `<h3 class="sg-title sg-pattern-title">${escapeHtml(pattern.title)}</h3>`,
-    await renderDoc(pattern, renderer),
+    await renderDoc(pattern, ctx),
   ]
 
   if (pattern.variants.length === 1) {
-    parts.push(await renderVariantBody(pattern.variants[0], renderer))
+    parts.push(await renderVariantBody(pattern.variants[0], ctx))
   } else {
     for (const variant of pattern.variants) {
       parts.push(
         `<div class="sg-variant" id="${variant.id}">`,
         `<h4 class="sg-title sg-variant-title">${escapeHtml(variant.title)}</h4>`,
-        await renderVariantBody(variant, renderer),
+        await renderVariantBody(variant, ctx),
         '</div>',
       )
     }
@@ -237,14 +207,14 @@ ${parts.filter(Boolean).join('\n')}
 
 /**
  * @param {Section} section
- * @param {Renderer} renderer
+ * @param {RenderContext} ctx
  */
-async function renderSection(section, renderer) {
+async function renderSection(section, ctx) {
   const parts = [
     `<h2 class="sg-title sg-group-title">${escapeHtml(section.title)}</h2>`,
-    await renderDoc(section, renderer),
+    await renderDoc(section, ctx),
   ]
-  for (const pattern of section.patterns) parts.push(await renderPattern(pattern, renderer))
+  for (const pattern of section.patterns) parts.push(await renderPattern(pattern, ctx))
   return `<section class="sg-group" id="${section.id}">
 ${parts.filter(Boolean).join('\n')}
 </section>`
@@ -264,7 +234,8 @@ export async function renderPage(tree, options, assets, renderer) {
   /** @type {string[]} */
   const main = []
 
-  for (const section of tree.sections) main.push(await renderSection(section, renderer))
+  const ctx = { renderer, dir: tree.dir }
+  for (const section of tree.sections) main.push(await renderSection(section, ctx))
 
   const styleLinks = assets.urlStyles.map(
     (href) => `<link rel="stylesheet" href="${escapeHtml(href)}">`,

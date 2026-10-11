@@ -8,6 +8,14 @@
       "types": "./types/index.d.ts",
       "default": "./src/index.js"
     },
+    "./jsx-runtime": {
+      "types": "./types/jsx-runtime.d.ts",
+      "default": "./src/jsx-runtime.js"
+    },
+    "./jsx-dev-runtime": {
+      "types": "./types/jsx-runtime.d.ts",
+      "default": "./src/jsx-runtime.js"
+    },
     "./package.json": "./package.json"
   },
   "types": "./types/index.d.ts",
@@ -23,7 +31,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "build:types": "tsc -p tsconfig.json",
+    "clean:types": "node -e \"require('node:fs').rmSync('types', { recursive: true, force: true })\"",
+    "build:types": "npm run clean:types && tsc -p tsconfig.json",
     "fixture:dev": "vite test/fixture",
     "fixture:build": "vite build test/fixture",
     "prepack": "npm run build:types",
@@ -52,8 +61,11 @@
     "vite": "^8.0.0"
   },
   "dependencies": {
+    "@mdx-js/mdx": "^3.1.1",
+    "@shikijs/rehype": "^4.5.0",
     "gray-matter": "^4.0.3",
     "markdown-it": "^15.0.2",
+    "remark-frontmatter": "^5.0.0",
     "shiki": "^4.5.0"
   },
   "devDependencies": {

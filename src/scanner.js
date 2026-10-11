@@ -3,77 +3,49 @@ import path from 'node:path'
 import matter from 'gray-matter'
 
 /**
- * @typedef {object} ColorEntry
- * @property {string} name  Label shown under the swatch.
- * @property {string} value Any CSS color, including `var(--token)`.
- */
-
-/**
- * @typedef {object} FontEntry
- * @property {string} name   Label shown above the sample.
- * @property {string} value  A `font-family` value, including `var(--token)`.
- * @property {string | number} [weight] Optional `font-weight` for the sample.
- * @property {string} [style] Optional `font-style` for the sample.
- */
-
-/**
- * Data from a doc's front matter that renders as swatches or samples.
+ * One example: an `.html` file and its sibling doc, or either on its own.
  *
- * @typedef {object} DocData
- * @property {ColorEntry[] | null} colors
- * @property {FontEntry[] | null} fonts
- */
-
-/**
- * One example: an `.html` file and its sibling `.md` doc, or either on its own.
- *
- * @typedef {object} VariantFields
+ * @typedef {object} Variant
  * @property {'variant'} type
  * @property {string} id      Unique anchor id, e.g. `sg-base-headings-sizes`.
  * @property {string} title
  * @property {number | undefined} order
  * @property {string | null} html    Example markup, or `null` for a doc-only variant.
- * @property {string | null} doc     Markdown body without front matter.
+ * @property {string | null} doc     The doc's body without front matter.
  * @property {string | null} htmlFile
- * @property {string | null} docFile
- *
- * @typedef {VariantFields & DocData} Variant
+ * @property {string | null} docFile A `.md` or `.mdx` file.
  */
 
 /**
  * A pattern: a folder of variants.
  *
- * @typedef {object} PatternFields
+ * @typedef {object} Pattern
  * @property {'pattern'} type
  * @property {string} id
  * @property {string} title
  * @property {number | undefined} order
- * @property {string | null} doc      Body of the folder's `index.md`.
+ * @property {string | null} doc      Body of the folder's `index.md` or `index.mdx`.
  * @property {string | null} docFile
  * @property {Variant[]} variants
- *
- * @typedef {PatternFields & DocData} Pattern
  */
 
 /**
  * A section: a top-level folder of patterns.
  *
- * @typedef {object} SectionFields
+ * @typedef {object} Section
  * @property {'section'} type
  * @property {string} id
  * @property {string} title
  * @property {number | undefined} order
- * @property {string | null} doc      Body of the folder's `index.md`.
+ * @property {string | null} doc      Body of the folder's `index.md` or `index.mdx`.
  * @property {string | null} docFile
  * @property {Pattern[]} patterns
- *
- * @typedef {SectionFields & DocData} Section
  */
 
 /**
  * @typedef {object} ContentTree
+ * @property {string} dir The content folder.
  * @property {Section[]} sections
- * @property {string[]} dataFiles JSON files that front matter points at.
  * @property {string[]} warnings Problems worth telling the user about.
  */
 
@@ -87,18 +59,30 @@ import matter from 'gray-matter'
  */
 
 /**
- * Collects warnings and data files while scanning.
- *
  * @typedef {object} ScanContext
  * @property {(file: string) => string} relative
  * @property {string[]} warnings
- * @property {Set<string>} dataFiles
  */
 
 const ORDER_PREFIX = /^(\d+)[-_.\s]+(.+)$/
 
+/** Doc file types. When both exist for the same example, `.mdx` wins. */
+const DOC_EXTENSIONS = ['.mdx', '.md']
+
 /** Documents a section or pattern folder. */
-const FOLDER_DOC = 'index.md'
+const FOLDER_DOCS = DOC_EXTENSIONS.map((ext) => `index${ext}`)
+
+/** @param {string} name */
+const extensionOf = (name) => path.extname(name).toLowerCase()
+
+/** @param {string} name */
+const isDoc = (name) => DOC_EXTENSIONS.includes(extensionOf(name))
+
+/** @param {string} name */
+const isExample = (name) => extensionOf(name) === '.html' || isDoc(name)
+
+/** @param {string} name */
+const isFolderDoc = (name) => FOLDER_DOCS.includes(name.toLowerCase())
 
 /**
  * Splits an optional number prefix off a file or folder name.
@@ -151,13 +135,15 @@ async function readText(file) {
 }
 
 /**
+ * Reads a `.md` or `.mdx` doc's front matter and body.
+ *
  * @param {string} file
- * @returns {Promise<{ data: Record<string, unknown>, body: string }>}
+ * @returns {Promise<{ meta: Record<string, unknown>, body: string }>}
  */
-async function readMarkdown(file) {
+async function readDoc(file) {
   // Pass an options object so gray-matter skips its content-keyed cache.
   const { data, content } = matter(await readText(file), {})
-  return { data, body: content.trim() }
+  return { meta: data, body: content.trim() }
 }
 
 /**
@@ -179,127 +165,55 @@ async function readFolder(folder) {
  * Title, order and slug from a file or folder name, overridden by front matter.
  *
  * @param {string} name
- * @param {Record<string, unknown>} data
+ * @param {Record<string, unknown>} meta The front matter.
  */
-function describeName(name, data) {
+function describeName(name, meta) {
   const parsed = parseName(name)
   return {
-    title: typeof data.title === 'string' ? data.title : titleFromName(parsed.name),
-    order: typeof data.order === 'number' ? data.order : parsed.order,
+    title: typeof meta.title === 'string' ? meta.title : titleFromName(parsed.name),
+    order: typeof meta.order === 'number' ? meta.order : parsed.order,
     slug: slugify(parsed.name),
   }
 }
 
 /**
- * Reads a `colors` or `fonts` front matter value: a list of entries, an
- * object of `name: value` pairs, or a path to a `.json` file with either.
- * Bad entries are skipped with a warning.
+ * Picks the doc from candidate files for one example or folder: `.mdx` over
+ * `.md`, with a warning about the one that's skipped.
  *
- * @param {'colors' | 'fonts'} key
- * @param {unknown} raw
- * @param {string} docFile The `.md` file the front matter came from.
+ * @param {string[]} files
  * @param {ScanContext} ctx
- * @returns {Promise<Array<Record<string, unknown>> | null>}
  */
-async function readEntries(key, raw, docFile, ctx) {
-  if (raw === undefined || raw === null) return null
-  const where = ctx.relative(docFile)
-  let data = raw
-
-  if (typeof raw === 'string') {
-    const file = path.resolve(path.dirname(docFile), raw)
-    if (path.extname(file).toLowerCase() !== '.json') {
-      ctx.warnings.push(`Ignoring "${key}" in ${where}: "${raw}" isn't a .json file.`)
-      return null
-    }
-    // Watch the file even when it's broken, so fixing it reloads the page.
-    ctx.dataFiles.add(file)
-    try {
-      data = JSON.parse(await readText(file))
-    } catch (error) {
-      const reason = /** @type {NodeJS.ErrnoException} */ (error).code === 'ENOENT'
-        ? 'the file doesn\'t exist'
-        : /** @type {Error} */ (error).message
-      ctx.warnings.push(`Ignoring "${key}" in ${where}: couldn't read "${raw}" (${reason}).`)
-      return null
-    }
-  }
-
-  /** @type {unknown[]} */
-  let list
-  if (Array.isArray(data)) {
-    list = data
-  } else if (data && typeof data === 'object') {
-    list = Object.entries(data).map(([name, value]) =>
-      value && typeof value === 'object' ? { name, ...value } : { name, value },
-    )
-  } else {
-    ctx.warnings.push(`Ignoring "${key}" in ${where}: expected a list, an object or a .json path.`)
-    return null
-  }
-
-  /** @type {Array<Record<string, unknown>>} */
-  const entries = []
-  let skipped = 0
-  for (const item of list) {
-    const entry = /** @type {Record<string, unknown>} */ (item)
-    if (entry && typeof entry.name === 'string' && typeof entry.value === 'string') {
-      entries.push(entry)
-    } else {
-      skipped++
-    }
-  }
-  if (skipped) {
+function pickDoc(files, ctx) {
+  const sorted = [...files].sort(
+    (a, b) => DOC_EXTENSIONS.indexOf(extensionOf(a)) - DOC_EXTENSIONS.indexOf(extensionOf(b)),
+  )
+  for (const skipped of sorted.slice(1)) {
     ctx.warnings.push(
-      `Skipped ${skipped} "${key}" ${skipped === 1 ? 'entry' : 'entries'} in ${where}: each needs a "name" and a "value" string.`,
+      `Ignoring "${ctx.relative(skipped)}": "${path.basename(sorted[0])}" documents the same example.`,
     )
   }
-  return entries
+  return sorted[0]
 }
 
 /**
- * Colors and fonts from a doc's front matter.
- *
- * @param {Record<string, unknown>} data
- * @param {string | null} docFile
- * @param {ScanContext} ctx
- * @returns {Promise<DocData>}
- */
-async function readDocData(data, docFile, ctx) {
-  if (!docFile) return { colors: null, fonts: null }
-
-  const colors = await readEntries('colors', data.colors, docFile, ctx)
-  const fonts = await readEntries('fonts', data.fonts, docFile, ctx)
-  return {
-    colors: colors && colors.map(({ name, value }) => ({ name: String(name), value: String(value) })),
-    fonts:
-      fonts &&
-      fonts.map(({ name, value, weight, style }) => ({
-        name: String(name),
-        value: String(value),
-        ...(typeof weight === 'string' || typeof weight === 'number' ? { weight } : {}),
-        ...(typeof style === 'string' ? { style } : {}),
-      })),
-  }
-}
-
-/**
- * Reads a folder's `index.md`, if it has one.
+ * Reads a folder's `index.md` or `index.mdx`, if it has one.
  *
  * @param {string} folder
  * @param {import('node:fs').Dirent[]} entries
  * @param {ScanContext} ctx
  */
 async function readFolderDoc(folder, entries, ctx) {
-  const entry = entries.find((e) => e.isFile() && e.name.toLowerCase() === FOLDER_DOC)
-  if (!entry) return { data: {}, doc: null, docFile: null, colors: null, fonts: null }
-  const file = path.join(folder, entry.name)
-  const { data, body } = await readMarkdown(file)
-  return { data, doc: body || null, docFile: file, ...(await readDocData(data, file, ctx)) }
+  const candidates = entries
+    .filter((e) => e.isFile() && isFolderDoc(e.name))
+    .map((e) => path.join(folder, e.name))
+  if (!candidates.length) return { meta: {}, doc: null, docFile: null }
+  const file = pickDoc(candidates, ctx)
+  const { meta, body } = await readDoc(file)
+  return { meta, doc: body || null, docFile: file }
 }
 
 /**
- * Pairs each `.html` file with its sibling `.md` doc, and reads them as variants.
+ * Pairs each `.html` file with its sibling doc, and reads them as variants.
  *
  * @param {string} folder
  * @param {import('node:fs').Dirent[]} entries
@@ -307,43 +221,46 @@ async function readFolderDoc(folder, entries, ctx) {
  * @returns {Promise<Found[]>}
  */
 async function readVariants(folder, entries, ctx) {
-  /** @type {Map<string, { html?: string, md?: string }>} */
+  /** @type {Map<string, { html?: string, docs: string[] }>} */
   const pairs = new Map()
   for (const entry of entries) {
-    if (!entry.isFile() || entry.name.toLowerCase() === FOLDER_DOC) continue
-    const ext = path.extname(entry.name).toLowerCase()
-    if (ext !== '.html' && ext !== '.md') continue
+    if (!entry.isFile() || isFolderDoc(entry.name) || !isExample(entry.name)) continue
+    const ext = extensionOf(entry.name)
     const base = entry.name.slice(0, -ext.length)
-    const pair = pairs.get(base) ?? {}
-    pair[ext === '.html' ? 'html' : 'md'] = path.join(folder, entry.name)
+    const pair = pairs.get(base) ?? { docs: [] }
+    const file = path.join(folder, entry.name)
+    if (ext === '.html') pair.html = file
+    else pair.docs.push(file)
     pairs.set(base, pair)
   }
 
-  return Promise.all([...pairs].map(([base, pair]) => readVariant(base, pair, ctx)))
+  return Promise.all(
+    [...pairs].map(([base, { html, docs }]) =>
+      readVariant(base, { html, doc: docs.length ? pickDoc(docs, ctx) : undefined }),
+    ),
+  )
 }
 
 /**
  * Reads one variant from its example and doc files.
  *
  * @param {string} name The file or folder name its title and order come from.
- * @param {{ html?: string, md?: string }} pair
- * @param {ScanContext} ctx
+ * @param {{ html?: string, doc?: string }} files
  * @returns {Promise<Found>}
  */
-async function readVariant(name, pair, ctx) {
-  const { data, body } = pair.md ? await readMarkdown(pair.md) : { data: {}, body: '' }
-  const { title, order, slug } = describeName(name, data)
+async function readVariant(name, files) {
+  const { meta, body } = files.doc ? await readDoc(files.doc) : { meta: {}, body: '' }
+  const { title, order, slug } = describeName(name, meta)
   return {
     node: {
       type: 'variant',
       id: '',
       title,
       order,
-      html: pair.html ? (await readText(pair.html)).replace(/\s+$/, '') : null,
+      html: files.html ? (await readText(files.html)).replace(/\s+$/, '') : null,
       doc: body || null,
-      htmlFile: pair.html ?? null,
-      docFile: pair.md ?? null,
-      ...(await readDocData(data, pair.md ?? null, ctx)),
+      htmlFile: files.html ?? null,
+      docFile: files.doc ?? null,
     },
     slug,
     children: [],
@@ -351,8 +268,8 @@ async function readVariant(name, pair, ctx) {
 }
 
 /**
- * Reads a variant folder: one `.html` example and an optional `.md` doc, with
- * any file names. Its title and order come from the folder name.
+ * Reads a variant folder: one `.html` example and an optional `.md` or `.mdx`
+ * doc, with any file names. Its title and order come from the folder name.
  *
  * @param {string} folder
  * @param {ScanContext} ctx
@@ -361,11 +278,7 @@ async function readVariant(name, pair, ctx) {
 async function readVariantFolder(folder, ctx) {
   const entries = await readFolder(folder)
   const where = ctx.relative(folder)
-  /** @param {string} ext */
-  const filesWith = (ext) =>
-    entries
-      .filter((e) => e.isFile() && path.extname(e.name).toLowerCase() === ext)
-      .map((e) => path.join(folder, e.name))
+  const files = entries.filter((e) => e.isFile()).map((e) => path.join(folder, e.name))
 
   for (const entry of entries.filter((e) => e.isDirectory())) {
     ctx.warnings.push(
@@ -373,17 +286,19 @@ async function readVariantFolder(folder, ctx) {
     )
   }
 
-  const html = filesWith('.html')
-  const md = filesWith('.md')
-  if (html.length > 1 || md.length > 1) {
-    ctx.warnings.push(`Ignoring "${where}": a variant folder holds one .html file and one .md file at most.`)
+  const html = files.filter((file) => extensionOf(file) === '.html')
+  const docs = files.filter((file) => isDoc(file))
+  if (html.length > 1 || docs.length > 1) {
+    ctx.warnings.push(
+      `Ignoring "${where}": a variant folder holds one .html file and one .md or .mdx file at most.`,
+    )
     return null
   }
-  if (!html.length && !md.length) {
-    ctx.warnings.push(`Ignoring "${where}": it has no .html or .md file.`)
+  if (!html.length && !docs.length) {
+    ctx.warnings.push(`Ignoring "${where}": it has no .html, .md or .mdx file.`)
     return null
   }
-  return readVariant(path.basename(folder), { html: html[0], md: md[0] }, ctx)
+  return readVariant(path.basename(folder), { html: html[0], doc: docs[0] })
 }
 
 /**
@@ -396,11 +311,10 @@ async function readVariantFolder(folder, ctx) {
  */
 function warnStrayFiles(folder, entries, ctx, where) {
   for (const entry of entries) {
-    if (!entry.isFile() || entry.name.toLowerCase() === FOLDER_DOC) continue
-    const ext = path.extname(entry.name).toLowerCase()
-    if (ext !== '.html' && ext !== '.md') continue
+    if (!entry.isFile() || !isExample(entry.name)) continue
+    if (where === 'section' && isFolderDoc(entry.name)) continue
     const file = ctx.relative(path.join(folder, entry.name))
-    const base = entry.name.slice(0, -ext.length)
+    const base = entry.name.slice(0, -extensionOf(entry.name).length)
     ctx.warnings.push(
       where === 'root'
         ? `Ignoring "${file}": the content folder holds section folders, like "${base}/index.md".`
@@ -415,10 +329,10 @@ function warnStrayFiles(folder, entries, ctx, where) {
  * - Each top-level folder is a section.
  * - Inside a section, each folder is a pattern.
  * - Inside a pattern, each example file or folder is a variant. A variant
- *   folder holds one `.html` file and an optional `.md` doc.
- * - `index.md` documents its section or pattern folder, and its front matter
- *   can set the folder's `title` and `order`.
- * - `colors` and `fonts` in any front matter render as swatches and samples.
+ *   folder holds one `.html` file and an optional doc.
+ * - Docs are `.md` or `.mdx`. `index.md` or `index.mdx` documents its section
+ *   or pattern folder, and its front matter can set the folder's `title` and
+ *   `order`.
  *
  * Example files anywhere else are skipped with a warning.
  *
@@ -430,7 +344,6 @@ export async function scanContent(dir) {
   const ctx = {
     relative: (file) => path.relative(dir, file).replaceAll('\\', '/'),
     warnings: [],
-    dataFiles: new Set(),
   }
 
   /**
@@ -439,8 +352,8 @@ export async function scanContent(dir) {
    */
   async function scanPattern(folder) {
     const entries = await readFolder(folder)
-    const { data, ...docs } = await readFolderDoc(folder, entries, ctx)
-    const { title, order, slug } = describeName(path.basename(folder), data)
+    const { meta, ...docs } = await readFolderDoc(folder, entries, ctx)
+    const { title, order, slug } = describeName(path.basename(folder), meta)
 
     // Variants can be loose files or folders, sorted together.
     const folders = await Promise.all(
@@ -464,8 +377,8 @@ export async function scanContent(dir) {
    */
   async function scanSection(folder) {
     const entries = await readFolder(folder)
-    const { data, ...docs } = await readFolderDoc(folder, entries, ctx)
-    const { title, order, slug } = describeName(path.basename(folder), data)
+    const { meta, ...docs } = await readFolderDoc(folder, entries, ctx)
+    const { title, order, slug } = describeName(path.basename(folder), meta)
 
     warnStrayFiles(folder, entries, ctx, 'section')
     const folders = entries.filter((e) => e.isDirectory())
@@ -511,6 +424,6 @@ export async function scanContent(dir) {
   }
 
   const sections = /** @type {Section[]} */ (finalize(top, []))
-  // Folders are read in parallel, so sort what they collected for stable output.
-  return { sections, dataFiles: [...ctx.dataFiles].sort(), warnings: ctx.warnings.sort() }
+  // Folders are read in parallel, so sort the warnings for stable output.
+  return { dir, sections, warnings: ctx.warnings.sort() }
 }

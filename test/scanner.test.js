@@ -76,6 +76,7 @@ describe('scanContent', () => {
       { 'Getting started': [] },
       { Colors: ['Brand', 'Neutrals'] },
       { Fonts: [] },
+      { Spacing: [] },
       { Guidelines: ['Writing'] },
       { Base: ['Entities', { Headings: ['Sizes', 'With links'] }, 'Lists'] },
       { Components: ['Button styles', 'Alerts'] },
@@ -181,67 +182,51 @@ describe('scanContent', () => {
     expect(tree.sections[0].doc).toBe('Base docs')
   })
 
-  describe('colors and fonts in front matter', () => {
-    it('reads inline lists and JSON files from the fixture', async () => {
+  describe('MDX docs', () => {
+    it('reads .mdx docs from the fixture', async () => {
       const tree = await scanContent(FIXTURE)
       const [brand, neutrals] = sectionById(tree, 'sg-colors').patterns
-
-      expect(brand.colors).toEqual([
-        { name: 'Brand', value: 'var(--brand)' },
-        { name: 'Black', value: '#000000' },
-      ])
-      expect(neutrals.colors).toEqual([
-        { name: 'Gray 100', value: '#f2f2f2' },
-        { name: 'Gray 900', value: '#1a1a1a' },
-      ])
-      expect(sectionById(tree, 'sg-fonts').fonts).toEqual([
-        { name: 'Body', value: 'Georgia, serif' },
-        { name: 'Body bold', value: 'Georgia, serif', weight: 700 },
-      ])
-      expect(tree.dataFiles).toEqual([
-        path.join(import.meta.dirname, 'fixture/tokens/neutrals.json'),
-      ])
+      expect(brand.docFile).toMatch(/brand[\\/]index\.mdx$/)
+      expect(brand.doc).toContain("import brand from '../../../tokens/brand.json'")
+      expect(neutrals.docFile).toMatch(/neutrals[\\/]index\.mdx$/)
+      expect(sectionById(tree, 'sg-spacing').docFile).toMatch(/04-spacing[\\/]index\.mdx$/)
     })
 
-    it('accepts data on sections, patterns and variants', async () => {
+    it('accepts .mdx wherever .md works, with front matter', async () => {
       const dir = await makeContent({
-        'palette/index.md': '---\ncolors:\n  Red: "#f00"\n---',
-        'palette/swatch/index.md': '---\ncolors: [{ name: Green, value: "#0f0" }]\n---',
-        'palette/swatch/a.html': '',
-        'palette/swatch/a.md': '---\nfonts:\n  Mono: { value: monospace, style: italic }\n---',
+        'tokens/index.mdx': '---\ntitle: Design tokens\n---\nSection doc',
+        'tokens/colors/index.mdx': 'Pattern doc',
+        'tokens/colors/brand.html': '<p>b</p>',
+        'tokens/colors/brand.mdx': '---\norder: 1\n---\nVariant doc',
+        'tokens/colors/02-folder/swatch.html': '<p>s</p>',
+        'tokens/colors/02-folder/index.mdx': 'Folder variant doc',
       })
       const tree = await scanContent(dir)
-      const palette = sectionById(tree, 'sg-palette')
-      expect(palette.colors).toEqual([{ name: 'Red', value: '#f00' }])
-      expect(palette.patterns[0].colors).toEqual([{ name: 'Green', value: '#0f0' }])
-      expect(palette.patterns[0].variants[0].fonts).toEqual([
-        { name: 'Mono', value: 'monospace', style: 'italic' },
+      const section = tree.sections[0]
+      expect(section).toMatchObject({ title: 'Design tokens', doc: 'Section doc' })
+      expect(section.patterns[0]).toMatchObject({ doc: 'Pattern doc' })
+      expect(section.patterns[0].variants).toMatchObject([
+        { title: 'Brand', doc: 'Variant doc', html: '<p>b</p>' },
+        { title: 'Folder', doc: 'Folder variant doc', html: '<p>s</p>' },
       ])
       expect(tree.warnings).toEqual([])
     })
 
-    it('warns about bad data and skips it', async () => {
+    it('prefers .mdx over .md for the same example, with a warning', async () => {
       const dir = await makeContent({
-        'a/index.md': '---\ncolors: ./missing.json\n---',
-        'b/index.md': '---\ncolors: ./colors.yml\n---',
-        'c/index.md': '---\ncolors: ./broken.json\n---',
-        'c/broken.json': '{ nope',
-        'd/index.md': '---\nfonts: 42\n---',
-        'e/index.md': '---\ncolors:\n  - { name: Ok, value: red }\n  - { name: No value }\n  - plain\n---',
+        'base/index.md': 'Markdown',
+        'base/index.mdx': 'MDX',
+        'base/card/card.html': '',
+        'base/card/card.md': 'Markdown',
+        'base/card/card.mdx': 'MDX',
       })
       const tree = await scanContent(dir)
-
-      expect(tree.warnings).toHaveLength(5)
-      expect(tree.warnings[0]).toMatch(/^Ignoring "colors" in a\/index\.md: couldn't read "\.\/missing\.json" \(the file doesn't exist\)\.$/)
-      expect(tree.warnings[1]).toBe(`Ignoring "colors" in b/index.md: "./colors.yml" isn't a .json file.`)
-      expect(tree.warnings[2]).toMatch(/^Ignoring "colors" in c\/index\.md: couldn't read "\.\/broken\.json"/)
-      expect(tree.warnings[3]).toBe('Ignoring "fonts" in d/index.md: expected a list, an object or a .json path.')
-      expect(tree.warnings[4]).toBe(
-        'Skipped 2 "colors" entries in e/index.md: each needs a "name" and a "value" string.',
-      )
-      expect(sectionById(tree, 'sg-e').colors).toEqual([{ name: 'Ok', value: 'red' }])
-      // Missing and broken files are still watched, so fixing them reloads the page.
-      expect(tree.dataFiles.map((file) => path.basename(file))).toEqual(['missing.json', 'broken.json'])
+      expect(tree.sections[0].doc).toBe('MDX')
+      expect(tree.sections[0].patterns[0].variants[0].doc).toBe('MDX')
+      expect(tree.warnings).toEqual([
+        'Ignoring "base/card/card.md": "card.mdx" documents the same example.',
+        'Ignoring "base/index.md": "index.mdx" documents the same example.',
+      ])
     })
   })
 
@@ -294,9 +279,9 @@ describe('scanContent', () => {
       })
       const tree = await scanContent(dir)
       expect(tree.warnings).toEqual([
-        'Ignoring "base/buttons/empty": it has no .html or .md file.',
+        'Ignoring "base/buttons/empty": it has no .html, .md or .mdx file.',
         `Ignoring "base/buttons/ok/deeper": variant folders can't contain folders.`,
-        'Ignoring "base/buttons/two-examples": a variant folder holds one .html file and one .md file at most.',
+        'Ignoring "base/buttons/two-examples": a variant folder holds one .html file and one .md or .mdx file at most.',
       ])
       expect(outline(tree.sections)).toEqual([{ Base: ['Buttons'] }])
     })
@@ -326,6 +311,6 @@ describe('scanContent', () => {
 
   it('returns an empty tree when the folder is missing', async () => {
     const tree = await scanContent(path.join(tmpdir(), 'sg-does-not-exist'))
-    expect(tree).toEqual({ sections: [], dataFiles: [], warnings: [] })
+    expect(tree).toMatchObject({ sections: [], warnings: [] })
   })
 })

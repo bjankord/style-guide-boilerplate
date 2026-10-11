@@ -1,13 +1,17 @@
 import path from 'node:path'
-import { describe, expect, it } from 'vitest'
-import { createRenderer, escapeHtml } from '../src/markdown.js'
+import { afterAll, describe, expect, it } from 'vitest'
+import { createRenderer } from '../src/markdown.js'
+import { createMdxLoader } from '../src/mdx.js'
 import { resolveOptions } from '../src/options.js'
 import { renderPage, searchEntries } from '../src/render.js'
 import { scanContent } from '../src/scanner.js'
 import fixtureOptions from './fixture/options.js'
 
 const FIXTURE = path.join(import.meta.dirname, 'fixture/style-guide')
-const renderer = createRenderer()
+const mdx = createMdxLoader({ root: path.join(import.meta.dirname, 'fixture') })
+const renderer = createRenderer({ loadMdx: (file) => mdx.load(file) })
+
+afterAll(() => mdx.close())
 
 /** @type {import('../src/render.js').PageAssets} */
 const assets = {
@@ -56,7 +60,7 @@ describe('renderPage', () => {
 
   it('renders an empty guide with an escaped title', async () => {
     const html = await renderPage(
-      { sections: [], dataFiles: [], warnings: [] },
+      { dir: '', sections: [], warnings: [] },
       resolveOptions({ title: 'Empty <Guide>' }),
       { ...assets, urlStyles: [] },
       renderer,
@@ -82,6 +86,7 @@ describe('renderPage', () => {
         'sg-getting-started',
         'sg-colors', 'sg-colors-brand', 'sg-colors-neutrals',
         'sg-fonts',
+        'sg-spacing',
         'sg-guidelines', 'sg-guidelines-writing',
         'sg-base', 'sg-base-entities',
         'sg-base-headings', 'sg-base-headings-sizes', 'sg-base-headings-with-links',
@@ -98,7 +103,7 @@ describe('renderPage', () => {
 
     it('lists only sections at depth 1', async () => {
       expect(await navLinks(1)).toEqual([
-        'sg-getting-started', 'sg-colors', 'sg-fonts', 'sg-guidelines', 'sg-base', 'sg-components',
+        'sg-getting-started', 'sg-colors', 'sg-fonts', 'sg-spacing', 'sg-guidelines', 'sg-base', 'sg-components',
       ])
     })
 
@@ -119,16 +124,58 @@ describe('renderPage', () => {
     expect(pattern('sg-base-lists')).not.toContain('sg-variant')
   })
 
-  it('renders colors and fonts after the doc they belong to', async () => {
-    const tree = await scanContent(FIXTURE)
-    const html = await renderPage(tree, resolveOptions({}), assets, renderer)
-    const brand = slice(html, '<article class="sg-pattern" id="sg-colors-brand">', '</article>')
-    expect(brand.indexOf('<div class="sg-doc">')).toBeGreaterThan(-1)
-    expect(brand.indexOf('<ul class="sg-color-grid">')).toBeGreaterThan(brand.indexOf('<div class="sg-doc">'))
-    expect(brand).toContain('<div class="sg-color-swatch" style="background: var(--brand)"></div>')
+  describe('MDX docs', () => {
+    it('renders the project markup built from imported JSON', async () => {
+      const tree = await scanContent(FIXTURE)
+      const html = await renderPage(tree, resolveOptions({}), assets, renderer)
 
-    const fonts = slice(html, '<section class="sg-group" id="sg-fonts">', '</section>')
-    expect(fonts).toContain('style="font-family: Georgia, serif; font-weight: 700"')
+      const brand = slice(html, '<article class="sg-pattern" id="sg-colors-brand">', '</article>')
+      expect(brand).toContain('<p>Brand colors for actions and links.</p>')
+      expect(brand).toContain('<div class="swatch-color" style="background: var(--brand)"></div>')
+
+      const neutrals = slice(html, '<article class="sg-pattern" id="sg-colors-neutrals">', '</article>')
+      expect(neutrals).toContain('<div class="swatch-name">Gray 900</div>')
+
+      const fonts = slice(html, '<section class="sg-group" id="sg-fonts">', '</section>')
+      expect(fonts).toContain('<dd class="font-sample-text" style="font-family: Georgia, serif">')
+      expect(fonts).toContain('style="font-family: Georgia, serif; font-weight: 700">The quick brown fox jumps over the lazy dog</dd>')
+
+      const spacing = slice(html, '<section class="sg-group" id="sg-spacing">', '</section>')
+      expect(spacing).toContain('<span class="spacing-bar" style="width: var(--space-3)"></span><code>--space-3</code> 1rem')
+      // A project component (test/fixture/components/TokenTable.jsx), imported by the doc.
+      expect(spacing).toContain('<tr><td><code>--space-4</code></td><td>2rem</td></tr>')
+    })
+
+    it('shows an MDX error in place of the doc and reports it', async () => {
+      /** @type {string[]} */
+      const errors = []
+      const failing = createRenderer({
+        loadMdx: async () => {
+          throw new Error('Unexpected end of file')
+        },
+        onError: (message) => errors.push(message),
+      })
+      const html = await renderPage(
+        {
+          dir: path.resolve('/content'),
+          sections: [{
+            type: 'section',
+            id: 'sg-x',
+            title: 'X',
+            order: undefined,
+            doc: 'Broken <',
+            docFile: path.resolve('/content/x/index.mdx'),
+            patterns: [],
+          }],
+          warnings: [],
+        },
+        resolveOptions({}),
+        assets,
+        failing,
+      )
+      expect(errors).toEqual(['MDX error in x/index.mdx: Unexpected end of file'])
+      expect(html).toContain('<div class="sg-doc"><pre class="sg-error">MDX error in x/index.mdx: Unexpected end of file</pre></div>')
+    })
   })
 
   describe('search', () => {
@@ -155,12 +202,13 @@ describe('renderPage', () => {
         'Getting started',
         'Colors', 'Brand', 'Neutrals',
         'Fonts',
+        'Spacing',
         'Guidelines', 'Writing',
         'Base', 'Entities', 'Headings', 'Sizes', 'With links', 'Lists',
         'Components', 'Button styles', 'Alerts',
       ])
       expect(searchEntries(tree, resolveOptions({ nav: { depth: 1 } })).map((entry) => entry.id)).toEqual([
-        'sg-getting-started', 'sg-colors', 'sg-fonts', 'sg-guidelines', 'sg-base', 'sg-components',
+        'sg-getting-started', 'sg-colors', 'sg-fonts', 'sg-spacing', 'sg-guidelines', 'sg-base', 'sg-components',
       ])
     })
 
@@ -168,23 +216,21 @@ describe('renderPage', () => {
       /** @param {string} id @param {string} title @param {string[]} variants */
       const pattern = (id, title, variants) => ({
         type: /** @type {const} */ ('pattern'), id, title, order: undefined, doc: null, docFile: null,
-        colors: null, fonts: null,
         variants: variants.map((v) => ({
           type: /** @type {const} */ ('variant'), id: `${id}-${v.toLowerCase()}`, title: v, order: undefined,
-          html: '', doc: null, htmlFile: null, docFile: null, colors: null, fonts: null,
+          html: '', doc: null, htmlFile: null, docFile: null,
         })),
       })
       /** @param {string} id @param {string} title @param {ReturnType<typeof pattern>[]} patterns */
       const section = (id, title, patterns) => ({
-        type: /** @type {const} */ ('section'), id, title, order: undefined, doc: null, docFile: null,
-        colors: null, fonts: null, patterns,
+        type: /** @type {const} */ ('section'), id, title, order: undefined, doc: null, docFile: null, patterns,
       })
       const tree = {
+        dir: '',
         sections: [
           section('sg-forms', 'Forms', [pattern('sg-forms-buttons', 'Buttons', ['Primary', 'Small'])]),
           section('sg-links', 'Links', [pattern('sg-links-buttons', 'Buttons', ['Primary', 'Large'])]),
         ],
-        dataFiles: [],
         warnings: [],
       }
       expect(searchEntries(tree, resolveOptions({})).map((entry) => entry.value)).toEqual([
@@ -192,28 +238,5 @@ describe('renderPage', () => {
         'Links', 'Buttons (Links)', 'Primary (Links › Buttons)', 'Large',
       ])
     })
-  })
-
-  it('escapes data values used in attributes', async () => {
-    /** @type {import('../src/scanner.js').Section} */
-    const section = {
-      type: 'section',
-      id: 'sg-x',
-      title: 'X',
-      order: undefined,
-      doc: null,
-      docFile: null,
-      colors: [{ name: 'Quote', value: '"red"><script>' }],
-      fonts: null,
-      patterns: [],
-    }
-    const html = await renderPage(
-      { sections: [section], dataFiles: [], warnings: [] },
-      resolveOptions({}),
-      assets,
-      renderer,
-    )
-    expect(html).toContain(`style="background: ${escapeHtml('"red"><script>')}"`)
-    expect(html).not.toContain('"red"><script>')
   })
 })

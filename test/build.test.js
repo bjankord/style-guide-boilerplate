@@ -90,6 +90,13 @@ describe('vite build on the fixture', () => {
     expect(code).toContain('data-sg-copy')
   })
 
+  it('renders MDX docs with imported JSON', () => {
+    expect(html).toContain('<span class="spacing-bar" style="width: var(--space-1)"></span>')
+    expect(html).toContain('<div class="swatch-name">Gray 100</div>')
+    expect(html).toContain('<dl class="font-samples">')
+    expect(html).not.toContain('sg-error')
+  })
+
   it('renders examples raw and escapes their source', () => {
     const article = html.match(/<article class="sg-pattern" id="sg-base-entities">[\s\S]*?<\/article>/)?.[0] ?? ''
     expect(article).toContain('<div class="sg-preview">\n<p>Fish &amp; chips &lt;3</p>\n</div>')
