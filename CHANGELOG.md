@@ -1,3 +1,35 @@
+4.0.0 / Unreleased
+==================
+
+Style Guide Boilerplate is now a Vite plugin. v3 (PHP) is end of life; the
+final version is tagged `v3-final`.
+
+* Replaced the PHP implementation with a Vite plugin (`@bjankord/style-guide-boilerplate`)
+* Added hot reload for project CSS and automatic page reloads for content changes
+* Added static builds with `vite build`, as a dedicated project or mounted in an existing app (`path`, `build` options)
+* Added project CSS through Vite (Sass, PostCSS and so on), or as plain URLs
+* Added `colors` and `fonts` front matter, inline or from a `.json` file, in place of hand-written swatch markup
+* Added a section → pattern → variant content layout, with `index.md` docs for section and pattern folders
+* Added number prefixes and front matter (`title`, `order`) for ordering and titles
+* Added a `nav.depth` option to control how deep the sidebar goes
+* Added build-time syntax highlighting with Shiki, with light and dark themes
+* Added a Copy button using the Clipboard API
+* Added a static search of the nav items, using a native `<datalist>`
+* Changed docs to sibling `.md` files next to each example
+* Changed "Getting Started", Colors and Fonts from fixed sections to ordinary content
+* Rewrote `sg-style.css` with CSS grid, `--sg-*` custom properties and dark mode for the guide's UI
+* Removed HTML docs, Parsedown, Prism and the old-IE stylesheet
+* Removed the `gh-pages/` demo folder
+
+### Migrating from v3
+
+* `markup/` and `doc/` → `style-guide/`, with each doc as a sibling `.md` file
+* HTML docs are dropped; Markdown can contain raw HTML
+* Getting Started, Colors and Fonts → content files, with colors and fonts as front matter data
+* The PHP server → `vite` and `vite build`
+
+See the [README](README.md#migrating-from-v3) for step-by-step instructions.
+
 3.3.2 / 2018-10-6
 ==================
 * Added package.json file to help deploy to gh-pages

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Style Guide Boilerplate</title>
+<script>document.documentElement.classList.add('sg-js')</script>
+<link rel="stylesheet" href="/style-guide.css">
+<link rel="stylesheet" href="https://example.com/remote.css">
+<script type="module" src="/@style-guide/entry.js"></script>
+</head>
+<body class="sg-body">
+<a class="sg-skip-link" href="#sg-main">Skip to main content</a>
+<div class="sg-layout">
+<header class="sg-header" id="sg-top">
+<a class="sg-brand" href="#sg-top">Style Guide Boilerplate</a>
+<form class="sg-search sg-search--header" role="search" data-sg-search hidden>
+<label class="sg-visually-hidden" for="sg-search-header">Search the style guide</label>
+<input class="sg-search-input" type="search" id="sg-search-header" list="sg-search-list" placeholder="Search" autocomplete="off">
+</form>
+<button type="button" class="sg-nav-toggle" aria-expanded="false" aria-controls="sg-nav" hidden>Menu</button>
+</header>
+<datalist id="sg-search-list">
+<option value="Getting started" data-sg-target="sg-getting-started"></option>
+<option value="Colors" data-sg-target="sg-colors"></option>
+<option value="Brand" data-sg-target="sg-colors-brand"></option>
+<option value="Neutrals" data-sg-target="sg-colors-neutrals"></option>
+<option value="Fonts" data-sg-target="sg-fonts"></option>
+<option value="Guidelines" data-sg-target="sg-guidelines"></option>
+<option value="Writing" data-sg-target="sg-guidelines-writing"></option>
+<option value="Base" data-sg-target="sg-base"></option>
+<option value="Entities" data-sg-target="sg-base-entities"></option>
+<option value="Headings" data-sg-target="sg-base-headings"></option>
+<option value="Sizes" data-sg-target="sg-base-headings-sizes"></option>
+<option value="With links" data-sg-target="sg-base-headings-with-links"></option>
+<option value="Lists" data-sg-target="sg-base-lists"></option>
+<option value="Components" data-sg-target="sg-components"></option>
+<option value="Button styles" data-sg-target="sg-components-buttons"></option>
+<option value="Alerts" data-sg-target="sg-components-alerts"></option>
+</datalist>
+<nav class="sg-sidebar" id="sg-nav" aria-label="Style guide">
+<div class="sg-sidebar-inner">
+<form class="sg-search sg-search--sidebar" role="search" data-sg-search hidden>
+<label class="sg-visually-hidden" for="sg-search-sidebar">Search the style guide</label>
+<input class="sg-search-input" type="search" id="sg-search-sidebar" list="sg-search-list" placeholder="Search" autocomplete="off">
+</form>
+<ul class="sg-nav-list"><li class="sg-nav-group"><a href="#sg-getting-started">Getting started</a></li><li class="sg-nav-group"><a href="#sg-colors">Colors</a><ul class="sg-nav-list"><li><a href="#sg-colors-brand">Brand</a></li><li><a href="#sg-colors-neutrals">Neutrals</a></li></ul></li><li class="sg-nav-group"><a href="#sg-fonts">Fonts</a></li><li class="sg-nav-group"><a href="#sg-guidelines">Guidelines</a><ul class="sg-nav-list"><li><a href="#sg-guidelines-writing">Writing</a></li></ul></li><li class="sg-nav-group"><a href="#sg-base">Base</a><ul class="sg-nav-list"><li><a href="#sg-base-entities">Entities</a></li><li><a href="#sg-base-headings">Headings</a><ul class="sg-nav-list"><li><a href="#sg-base-headings-sizes">Sizes</a></li><li><a href="#sg-base-headings-with-links">With links</a></li></ul></li><li><a href="#sg-base-lists">Lists</a></li></ul></li><li class="sg-nav-group"><a href="#sg-components">Components</a><ul class="sg-nav-list"><li><a href="#sg-components-buttons">Button styles</a></li><li><a href="#sg-components-alerts">Alerts</a></li></ul></li></ul>
+</div>
+</nav>
+<main class="sg-main" id="sg-main">
+<section class="sg-group" id="sg-getting-started">
+<h2 class="sg-title sg-group-title">Getting started</h2>
+<div class="sg-doc"><p>Welcome to the <strong>fixture</strong> style guide.</p>
+<pre class="shiki shiki-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e" tabindex="0"><code><span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#F97583">const</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF"> answer</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583"> =</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF"> 42</span></span></code></pre>
+</div>
+</section>
+<section class="sg-group" id="sg-colors">
+<h2 class="sg-title sg-group-title">Colors</h2>
+<div class="sg-doc"><p>Use the CSS variables rather than raw values.</p>
+</div>
+<article class="sg-pattern" id="sg-colors-brand">
+<h3 class="sg-title sg-pattern-title">Brand</h3>
+<div class="sg-doc"><p>Brand colors for actions and links.</p>
+</div>
+<ul class="sg-color-grid">
+<li class="sg-color">
+<div class="sg-color-swatch" style="background: var(--brand)"></div>
+<div class="sg-color-name">Brand</div>
+<code class="sg-color-value">var(--brand)</code>
+</li>
+<li class="sg-color">
+<div class="sg-color-swatch" style="background: #000000"></div>
+<div class="sg-color-name">Black</div>
+<code class="sg-color-value">#000000</code>
+</li>
+</ul>
+<a class="sg-top-link" href="#sg-top">Back to top</a>
+</article>
+<article class="sg-pattern" id="sg-colors-neutrals">
+<h3 class="sg-title sg-pattern-title">Neutrals</h3>
+<ul class="sg-color-grid">
+<li class="sg-color">
+<div class="sg-color-swatch" style="background: #f2f2f2"></div>
+<div class="sg-color-name">Gray 100</div>
+<code class="sg-color-value">#f2f2f2</code>
+</li>
+<li class="sg-color">
+<div class="sg-color-swatch" style="background: #1a1a1a"></div>
+<div class="sg-color-name">Gray 900</div>
+<code class="sg-color-value">#1a1a1a</code>
+</li>
+</ul>
+<a class="sg-top-link" href="#sg-top">Back to top</a>
+</article>
+</section>
+<section class="sg-group" id="sg-fonts">
+<h2 class="sg-title sg-group-title">Fonts</h2>
+<dl class="sg-font-list">
+<div class="sg-font">
+<dt class="sg-font-name">Body</dt>
+<dd class="sg-font-sample" style="font-family: Georgia, serif">The quick brown fox jumps over the lazy dog</dd>
+<dd class="sg-font-value"><code>Georgia, serif</code></dd>
+</div>
+<div class="sg-font">
+<dt class="sg-font-name">Body bold</dt>
+<dd class="sg-font-sample" style="font-family: Georgia, serif; font-weight: 700">The quick brown fox jumps over the lazy dog</dd>
+<dd class="sg-font-value"><code>Georgia, serif</code></dd>
+</div>
+</dl>
+</section>
+<section class="sg-group" id="sg-guidelines">
+<h2 class="sg-title sg-group-title">Guidelines</h2>
+<article class="sg-pattern" id="sg-guidelines-writing">
+<h3 class="sg-title sg-pattern-title">Writing</h3>
+<div class="sg-doc"><p>Write in plain language.</p>
+</div>
+<a class="sg-top-link" href="#sg-top">Back to top</a>
+</article>
+</section>
+<section class="sg-group" id="sg-base">
+<h2 class="sg-title sg-group-title">Base</h2>
+<div class="sg-doc"><p>Plain HTML elements, styled by the project's base CSS.</p>
+</div>
+<article class="sg-pattern" id="sg-base-entities">
+<h3 class="sg-title sg-pattern-title">Entities</h3>
+<div class="sg-preview">
+<p>Fish &amp; chips &lt;3</p>
+</div>
+<details class="sg-source">
+<summary class="sg-source-toggle">View source</summary>
+<div class="sg-source-code">
+<button type="button" class="sg-btn sg-copy" data-sg-copy hidden>Copy</button>
+<pre class="shiki shiki-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e" tabindex="0"><code><span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">&#x3C;</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">p</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">>Fish </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">&#x26;amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8"> chips </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF">&#x26;lt;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">3&#x3C;/</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">p</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">></span></span></code></pre>
+</div>
+</details>
+<a class="sg-top-link" href="#sg-top">Back to top</a>
+</article>
+<article class="sg-pattern" id="sg-base-headings">
+<h3 class="sg-title sg-pattern-title">Headings</h3>
+<div class="sg-doc"><p>Use one <code>h1</code> per page.</p>
+</div>
+<div class="sg-variant" id="sg-base-headings-sizes">
+<h4 class="sg-title sg-variant-title">Sizes</h4>
+<div class="sg-doc"><p>All heading levels, largest first.</p>
+</div>
+<div class="sg-preview">
+<h1>Heading 1</h1>
+<h2>Heading 2</h2>
+</div>
+<details class="sg-source">
+<summary class="sg-source-toggle">View source</summary>
+<div class="sg-source-code">
+<button type="button" class="sg-btn sg-copy" data-sg-copy hidden>Copy</button>
+<pre class="shiki shiki-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e" tabindex="0"><code><span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">&#x3C;</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">h1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">>Heading 1&#x3C;/</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">h1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">></span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">&#x3C;</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">h2</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">>Heading 2&#x3C;/</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">h2</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">></span></span></code></pre>
+</div>
+</details>
+</div>
+<div class="sg-variant" id="sg-base-headings-with-links">
+<h4 class="sg-title sg-variant-title">With links</h4>
+<div class="sg-preview">
+<h2><a href="#">A linked heading</a></h2>
+</div>
+<details class="sg-source">
+<summary class="sg-source-toggle">View source</summary>
+<div class="sg-source-code">
+<button type="button" class="sg-btn sg-copy" data-sg-copy hidden>Copy</button>
+<pre class="shiki shiki-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e" tabindex="0"><code><span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">&#x3C;</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">h2</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">>&#x3C;</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">a</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0"> href</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">=</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">"#"</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">>A linked heading&#x3C;/</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">a</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">>&#x3C;/</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">h2</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">></span></span></code></pre>
+</div>
+</details>
+</div>
+<a class="sg-top-link" href="#sg-top">Back to top</a>
+</article>
+<article class="sg-pattern" id="sg-base-lists">
+<h3 class="sg-title sg-pattern-title">Lists</h3>
+<div class="sg-preview">
+<ul>
+  <li>One</li>
+  <li>Two</li>
+</ul>
+</div>
+<details class="sg-source">
+<summary class="sg-source-toggle">View source</summary>
+<div class="sg-source-code">
+<button type="button" class="sg-btn sg-copy" data-sg-copy hidden>Copy</button>
+<pre class="shiki shiki-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e" tabindex="0"><code><span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">&#x3C;</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">ul</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">></span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  &#x3C;</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">li</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">>One&#x3C;/</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">li</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">></span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">  &#x3C;</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">li</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">>Two&#x3C;/</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">li</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">></span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">&#x3C;/</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">ul</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">></span></span></code></pre>
+</div>
+</details>
+<a class="sg-top-link" href="#sg-top">Back to top</a>
+</article>
+</section>
+<section class="sg-group" id="sg-components">
+<h2 class="sg-title sg-group-title">Components</h2>
+<article class="sg-pattern" id="sg-components-buttons">
+<h3 class="sg-title sg-pattern-title">Button styles</h3>
+<div class="sg-doc"><p>Buttons use the brand color.</p>
+</div>
+<div class="sg-preview">
+<button type="button" class="button">Save</button>
+</div>
+<details class="sg-source">
+<summary class="sg-source-toggle">View source</summary>
+<div class="sg-source-code">
+<button type="button" class="sg-btn sg-copy" data-sg-copy hidden>Copy</button>
+<pre class="shiki shiki-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e" tabindex="0"><code><span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">&#x3C;</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">button</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0"> type</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">=</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">"button"</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0"> class</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">=</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">"button"</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">>Save&#x3C;/</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">button</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">></span></span></code></pre>
+</div>
+</details>
+<a class="sg-top-link" href="#sg-top">Back to top</a>
+</article>
+<article class="sg-pattern" id="sg-components-alerts">
+<h3 class="sg-title sg-pattern-title">Alerts</h3>
+<div class="sg-preview">
+<div class="alert" role="alert">Heads up!</div>
+</div>
+<details class="sg-source">
+<summary class="sg-source-toggle">View source</summary>
+<div class="sg-source-code">
+<button type="button" class="sg-btn sg-copy" data-sg-copy hidden>Copy</button>
+<pre class="shiki shiki-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e" tabindex="0"><code><span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">&#x3C;</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">div</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0"> class</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">=</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">"alert"</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0"> role</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">=</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF">"alert"</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">>Heads up!&#x3C;/</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D">div</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8">></span></span></code></pre>
+</div>
+</details>
+<a class="sg-top-link" href="#sg-top">Back to top</a>
+</article>
+</section>
+</main>
+</div>
+
+</body>
+</html>

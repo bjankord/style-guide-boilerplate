@@ -1,25 +1,66 @@
 {
   "name": "@bjankord/style-guide-boilerplate",
   "version": "3.3.2",
-  "description": "A starting point for crafting living style guides.",
+  "description": "A Vite plugin for crafting living style guides from HTML examples and Markdown docs.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "types": "./types/index.d.ts",
+  "files": [
+    "src",
+    "types"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\"",
-    "deploy": "gh-pages -d gh-pages",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build:types": "tsc -p tsconfig.json",
+    "fixture:dev": "vite test/fixture",
+    "fixture:build": "vite build test/fixture",
+    "prepack": "npm run build:types",
     "release:major": "npm test && npm version major -m \"Released version %s\" && npm publish --access=public && git push --follow-tags",
     "release:minor": "npm test && npm version minor -m \"Released version %s\" && npm publish --access=public && git push --follow-tags",
     "release:patch": "npm test && npm version patch -m \"Released version %s\" && npm publish --access=public && git push --follow-tags"
   },
+  "keywords": [
+    "style-guide",
+    "styleguide",
+    "living-style-guide",
+    "pattern-library",
+    "vite-plugin"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bjankord/Style-Guide-Boilerplate.git"
+    "url": "git+https://github.com/bjankord/style-guide-boilerplate.git"
   },
   "author": "Brett Jankord",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bjankord/Style-Guide-Boilerplate/issues"
+    "url": "https://github.com/bjankord/style-guide-boilerplate/issues"
   },
-  "homepage": "https://github.com/bjankord/Style-Guide-Boilerplate#readme",
+  "homepage": "https://github.com/bjankord/style-guide-boilerplate#readme",
+  "peerDependencies": {
+    "vite": "^8.0.0"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "markdown-it": "^15.0.2",
+    "shiki": "^4.5.0"
+  },
   "devDependencies": {
-    "gh-pages": "^2.0.1"
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^22.20.5",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.3",
+    "vitest": "^5.0.3"
   }
 }

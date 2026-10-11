@@ -1,0 +1,10 @@
+:root {
+  --brand: rgb(26, 188, 156);
+}
+
+.button {
+  background: var(--brand);
+  border: 0;
+  color: #fff;
+  padding: 0.5em 1em;
+}

@@ -1,0 +1,3 @@
+---
+colors: ../../../tokens/neutrals.json
+---

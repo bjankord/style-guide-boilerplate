@@ -24,8 +24,15 @@ nbproject
 *.sublime-project
 *.sublime-workspace
 .idea
-
+.claude/launch.json
 
 # Folders to ignore
 node_modules
 bower_components
+plans
+# Build and test output
+dist
+types
+.tmp
+test-results
+playwright-report

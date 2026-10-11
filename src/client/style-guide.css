@@ -1,0 +1,536 @@
+/* -------------------------------------------------------------------------
+ Style Guide Boilerplate
+ Repo: https://github.com/bjankord/style-guide-boilerplate
+ License: MIT
+
+ Every selector uses the sg- prefix so the project's own CSS stays in charge
+ of everything else on the page. Theme the guide with the --sg-* properties.
+---------------------------------------------------------------------------- */
+
+:root {
+  --sg-accent: #3498db;
+  --sg-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --sg-mono-font: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --sg-sidebar-width: 18rem;
+  --sg-header-bg: #000;
+  --sg-header-color: #fff;
+  --sg-sidebar-bg: #3d3d3d;
+  --sg-sidebar-color: #fff;
+  --sg-sidebar-hover-bg: #565656;
+  --sg-border: #ddd;
+  --sg-muted: #6b6b6b;
+  --sg-button-bg: #e4e4e4;
+  --sg-button-color: #222;
+  --sg-code-bg: #fff;
+}
+
+/* Dark mode themes the guide's chrome and code panels. The main area keeps
+   the project's own colors, since that's what the examples are styled for. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sg-sidebar-bg: #1f1f1f;
+    --sg-sidebar-hover-bg: #3d3d3d;
+    --sg-code-bg: #24292e;
+  }
+}
+
+/* Layout
+---------------------------------------------------------------------------- */
+[class^="sg-"],
+[class*=" sg-"] {
+  box-sizing: border-box;
+}
+
+.sg-body {
+  margin: 0;
+}
+
+/* Zero specificity, so any project `body` rule wins. */
+:where(.sg-body) {
+  background-color: #fff;
+  color: #111;
+}
+
+/* Smooth scrolling for in-page links like "Back to top", unless the visitor
+   prefers reduced motion. Scoped with :has() so it only applies to the guide. */
+@media (prefers-reduced-motion: no-preference) {
+  :root:has(.sg-body) {
+    scroll-behavior: smooth;
+  }
+}
+
+.sg-layout {
+  display: grid;
+  grid-template-areas:
+    "header"
+    "sidebar"
+    "main";
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sg-header {
+  align-items: center;
+  background: var(--sg-header-bg);
+  color: var(--sg-header-color);
+  display: flex;
+  font-family: var(--sg-font);
+  gap: 1rem;
+  grid-area: header;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+}
+
+.sg-sidebar {
+  background: var(--sg-sidebar-bg);
+  color: var(--sg-sidebar-color);
+  font-family: var(--sg-font);
+  grid-area: sidebar;
+}
+
+.sg-sidebar-inner {
+  padding: 1.5rem 1rem;
+}
+
+.sg-main {
+  grid-area: main;
+  min-width: 0;
+  padding: 1.5rem 1rem 2rem;
+}
+
+/* Small screens: the menu button shows and hides the sidebar once JS runs. */
+.sg-js .sg-sidebar {
+  display: none;
+}
+
+.sg-js.sg-nav-open .sg-sidebar {
+  display: block;
+}
+
+@media (min-width: 64em) {
+  .sg-layout {
+    grid-template-areas:
+      "header header"
+      "sidebar main";
+    grid-template-columns: var(--sg-sidebar-width) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+
+  .sg-js .sg-sidebar {
+    display: block;
+  }
+
+  .sg-sidebar-inner {
+    max-height: 100vh;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+  }
+
+  .sg-main {
+    padding-inline: 2rem;
+  }
+
+  .sg-header .sg-nav-toggle {
+    display: none;
+  }
+
+  /* The header search replaces the sidebar one once the menu button is gone. */
+  .sg-search--header:not([hidden]) {
+    display: block;
+  }
+
+  .sg-search--sidebar {
+    display: none;
+  }
+}
+
+/* Branding
+---------------------------------------------------------------------------- */
+.sg-brand {
+  color: inherit;
+  font-size: 1.125rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 2rem;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+/* Navigation
+---------------------------------------------------------------------------- */
+.sg-nav-toggle {
+  background: var(--sg-header-bg);
+  border: 1px solid #7c7c7c;
+  border-radius: 5px;
+  color: var(--sg-header-color);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1rem;
+  padding: 0.3125rem 0.75rem;
+  transition: border-color 0.15s ease-in;
+}
+
+.sg-nav-toggle:hover,
+.sg-nav-toggle:focus-visible {
+  border-color: #bcbcbc;
+}
+
+.sg-nav-toggle[hidden] {
+  display: none;
+}
+
+.sg-nav-list {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+}
+
+.sg-nav-list .sg-nav-list {
+  margin: 0.25rem 0 0 0.75rem;
+}
+
+.sg-nav-list li {
+  margin: 0 0 0.25rem;
+  padding: 0;
+}
+
+.sg-nav-list a {
+  border-left: 2px solid transparent;
+  color: var(--sg-sidebar-color);
+  display: block;
+  padding: 0.35em 0.5em;
+  text-decoration: none;
+  transition: background-color 0.15s ease-in, border-color 0.15s ease-in;
+}
+
+.sg-nav-list a:hover,
+.sg-nav-list a:focus-visible {
+  background: var(--sg-sidebar-hover-bg);
+  border-left-color: var(--sg-accent);
+}
+
+.sg-nav-group {
+  margin-top: 1.5rem;
+}
+
+.sg-nav-group > a {
+  font-size: 1.125em;
+  font-weight: 600;
+}
+
+.sg-nav-list > .sg-nav-group:first-child {
+  margin-top: 0;
+}
+
+/* Search
+---------------------------------------------------------------------------- */
+.sg-search {
+  margin: 0;
+}
+
+.sg-search[hidden],
+.sg-search--header {
+  display: none;
+}
+
+.sg-search--sidebar {
+  margin-bottom: 1.5rem;
+}
+
+.sg-search-input {
+  background: #fff;
+  border: 1px solid #7c7c7c;
+  border-radius: 5px;
+  color: #111;
+  font-family: var(--sg-font);
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 0.25rem 0.625rem;
+  width: 100%;
+}
+
+.sg-search--header .sg-search-input {
+  width: 16rem;
+}
+
+.sg-search-input:focus-visible {
+  outline: 2px solid var(--sg-accent);
+  outline-offset: 2px;
+}
+
+.sg-search-input[aria-invalid="true"] {
+  border-color: #e74c3c;
+}
+
+.sg-visually-hidden {
+  border: 0;
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+/* Search results get focus so screen readers announce them; skip the ring. */
+.sg-main [tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* Headings
+---------------------------------------------------------------------------- */
+.sg-title {
+  font-family: var(--sg-font);
+  font-weight: 500;
+  line-height: 1.25;
+  margin: 0 0 0.75em;
+}
+
+.sg-group-title {
+  border-bottom: 1px solid var(--sg-border);
+  font-size: 2em;
+  padding-bottom: 0.2em;
+}
+
+.sg-pattern-title {
+  font-size: 1.5em;
+}
+
+.sg-variant-title {
+  color: var(--sg-muted);
+  font-size: 1.125em;
+}
+
+/* Sections
+---------------------------------------------------------------------------- */
+.sg-group,
+.sg-pattern {
+  margin-bottom: 3rem;
+}
+
+.sg-group > .sg-pattern:last-child {
+  margin-bottom: 0;
+}
+
+.sg-variant {
+  margin-bottom: 2rem;
+}
+
+.sg-variant:last-of-type {
+  margin-bottom: 0;
+}
+
+.sg-doc {
+  border-bottom: 1px solid var(--sg-border);
+  margin-bottom: 1.5rem;
+}
+
+.sg-preview {
+  display: flow-root;
+  margin-bottom: 1.5rem;
+}
+
+/* Buttons and links
+---------------------------------------------------------------------------- */
+.sg-btn,
+.sg-source-toggle {
+  background: var(--sg-button-bg);
+  border: 0;
+  border-radius: 0.25em;
+  color: var(--sg-button-color);
+  cursor: pointer;
+  display: inline-block;
+  font-family: var(--sg-font);
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 0.5em 0.9em;
+}
+
+.sg-btn:hover,
+.sg-source-toggle:hover {
+  filter: brightness(0.95);
+}
+
+.sg-btn:focus-visible,
+.sg-source-toggle:focus-visible,
+.sg-top-link:focus-visible {
+  outline: 2px solid var(--sg-accent);
+  outline-offset: 2px;
+}
+
+.sg-btn[hidden] {
+  display: none;
+}
+
+.sg-top-link {
+  color: var(--sg-muted);
+  display: inline-block;
+  font-family: var(--sg-font);
+  font-size: 0.875rem;
+  margin-top: 1rem;
+}
+
+.sg-skip-link {
+  background: var(--sg-header-bg);
+  color: var(--sg-header-color);
+  font-family: var(--sg-font);
+  left: 1rem;
+  padding: 0.5rem 1rem;
+  position: absolute;
+  top: -10rem;
+  z-index: 100;
+}
+
+.sg-skip-link:focus {
+  top: 1rem;
+}
+
+/* Source
+---------------------------------------------------------------------------- */
+.sg-source {
+  display: block;
+  margin: 0;
+}
+
+.sg-source-toggle {
+  list-style: none;
+}
+
+.sg-source-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.sg-source-toggle::before {
+  content: "\25B8";
+  display: inline-block;
+  margin-right: 0.4em;
+  transition: transform 0.15s ease-in;
+}
+
+.sg-source[open] > .sg-source-toggle::before {
+  transform: rotate(90deg);
+}
+
+.sg-source-code {
+  margin-top: 0.75rem;
+  position: relative;
+}
+
+.sg-copy {
+  font-size: 0.875rem;
+  padding: 0.25em 0.75em;
+  position: absolute;
+  right: 0.5rem;
+  top: 0.5rem;
+}
+
+/* Shiki code blocks, in the source panels and in docs */
+.sg-source-code .shiki,
+.sg-doc .shiki {
+  background-color: var(--shiki-light-bg, var(--sg-code-bg));
+  border: 1px solid var(--sg-border);
+  border-radius: 0.5em;
+  font-family: var(--sg-mono-font);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0 0 1rem;
+  overflow-x: auto;
+  padding: 1rem;
+  tab-size: 2;
+}
+
+.sg-source-code .shiki,
+.sg-source-code .shiki span,
+.sg-doc .shiki,
+.sg-doc .shiki span {
+  color: var(--shiki-light);
+}
+
+.sg-source-code .shiki code,
+.sg-doc .shiki code {
+  background: none;
+  border: 0;
+  font: inherit;
+  padding: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sg-source-code .shiki,
+  .sg-doc .shiki {
+    background-color: var(--shiki-dark-bg, var(--sg-code-bg));
+  }
+
+  .sg-source-code .shiki,
+  .sg-source-code .shiki span,
+  .sg-doc .shiki,
+  .sg-doc .shiki span {
+    color: var(--shiki-dark);
+  }
+}
+
+/* Colors
+---------------------------------------------------------------------------- */
+.sg-color-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+}
+
+.sg-color {
+  font-family: var(--sg-font);
+  margin: 0;
+}
+
+.sg-color-swatch {
+  aspect-ratio: 5 / 3;
+  border: 1px solid var(--sg-border);
+  border-radius: 0.25em;
+}
+
+.sg-color-name {
+  font-size: 1.125em;
+  font-weight: 500;
+  padding: 0.5em 0 0.25em;
+}
+
+.sg-color-value {
+  color: var(--sg-muted);
+  font-family: var(--sg-mono-font);
+  font-size: 0.875em;
+}
+
+/* Fonts
+---------------------------------------------------------------------------- */
+.sg-font-list {
+  margin: 0 0 1.5rem;
+}
+
+.sg-font {
+  border-bottom: 1px solid var(--sg-border);
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+}
+
+.sg-font-name {
+  font-family: var(--sg-font);
+  font-weight: 500;
+  margin-bottom: 0.25em;
+}
+
+.sg-font-sample {
+  font-size: 1.5em;
+  margin: 0 0 0.25em;
+}
+
+.sg-font-value {
+  color: var(--sg-muted);
+  font-family: var(--sg-mono-font);
+  font-size: 0.875em;
+  margin: 0;
+}
