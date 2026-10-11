@@ -1,6 +1,6 @@
 {
   "name": "@bjankord/style-guide-boilerplate",
-  "version": "3.3.2",
+  "version": "4.0.0-rc.0",
   "description": "A Vite plugin for crafting living style guides from HTML examples and Markdown docs.",
   "type": "module",
   "exports": {
